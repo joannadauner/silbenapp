@@ -108,38 +108,28 @@ Falsch oder unsicher gelesene Silben sollen zuverlässig erneut erscheinen.
 
 ### Gewünschtes Verhalten
 
-- weiterhin 15 reguläre Aufgaben
-- offene Wiederholungen müssen nach Aufgabe 15 noch abgearbeitet werden
-- falsch gelesene Silben dürfen nicht verloren gehen
-- Wiederholung möglichst nach 3–5 anderen Aufgaben
-- bei erneuter falscher Antwort darf die Silbe erneut eingeplant werden
-- exakte Schreibweise bleibt erhalten:
-  - `Ma` wird wieder zu `Ma`
-  - `ma` wird wieder zu `ma`
-- maximal 20 Aufgaben pro Runde
-- dadurch keine Endlosschleifen
+- Start mit 15 Aufgaben: neue Aufgaben und bis zu fünf offene Wiederholungen gemischt
+- ohne offene Wiederholungen werden 15 neue Aufgaben erzeugt
+- zusätzliche Wiederholungen möglichst nach 3–5 anderen Aufgaben
+- maximal 20 angezeigte Aufgaben pro Runde, unabhängig von der Fehlerzahl
+- keine Leben und kein Abbruch wegen unsicherer Antworten
+- offene Wiederholungen sofort in localStorage speichern und in nächste Runden übernehmen
+- pro exakter Schreibweise nur ein offener Auftrag (`Ma` und `ma` bleiben getrennt)
+- „Richtig“ erledigt den Auftrag und entfernt seine noch eingeplante Wiederholung
+- übernommene Aufträge bleiben bis zur richtigen Antwort gespeichert, auch bei Neuladen
+- spätere Wochen bleiben ausgeschlossen; ihre offenen Aufträge warten auf Freischaltung
+- aus den Wochen entfernte Silben werden beim nächsten gültigen Rundenstart bereinigt
 
 ### Fortschrittsanzeige
 
-Die Anzeige soll verständlich bleiben, auch wenn die Runde durch Wiederholungen länger wird.
-
-Mögliche Darstellung:
-
-```text
-Aufgabe 12
-```
-
-oder:
-
-```text
-12 / max. 20
-```
-
-Die Darstellung soll ruhig und kindgerecht bleiben.
+Ruhig und ohne Fehlerzähler: „Aufgabe 12“.
+Am Rundenende erscheint „Für heute geschafft!“.
 
 ### Status
 
-Nächster Entwicklungsschritt.
+Umgesetzt. Offene Wiederholungen bleiben auch über die Grenze von 20 Aufgaben
+hinaus für spätere Runden gespeichert. Am Rundenende können Wiederholungen
+früher als nach drei anderen Aufgaben erscheinen, wenn weniger Aufgaben übrig sind.
 
 ---
 
@@ -549,28 +539,32 @@ Aktuell vorhanden:
 - nur aktuelle und vorherige Wochen werden verwendet
 - zufällige Groß-/Kleinschreibung
 - exakte Schreibweise bei Wiederholung
+- 15 Startaufgaben mit eingemischten offenen Wiederholungen, maximal 20 Aufgaben
+- Wiederholungen möglichst nach 3–5 anderen Aufgaben
+- Fortschrittsanzeige „Aufgabe …“, keine Leben
+- offene Wiederholungen lokal über mehrere Runden speichern
 - Richtig / Nochmal / Weiß ich nicht
 - Abschlussbildschirm
 - Codex in VS Code eingerichtet
 
 ---
 
-# Aktueller nächster Schritt
+# Abschluss Version 0.2.2
 
 ## Version 0.2.2
 
-Wiederholungslogik vollständig abschließen.
+Wiederholungslogik umgesetzt und anhand automatisierter Logikprüfungen geprüft.
 
 Ziel:
 
-- 15 reguläre Aufgaben
+- 15 Startaufgaben einschließlich übernommener Wiederholungen
 - Wiederholungen auch nach Aufgabe 15 anzeigen
 - maximal 20 Aufgaben
-- keine offenen Wiederholungen verlieren
+- offene Wiederholungen bis zur Obergrenze bearbeiten und den Rest für spätere Runden speichern
 - exakte Schreibweise beibehalten
 - verständliche Fortschrittsanzeige
 
-Danach:
+Nächster Entwicklungsschritt:
 
 ## Version 0.3
 

@@ -4,6 +4,10 @@
 
 const SESSION_LENGTH = 15;
 const MAX_SESSION_LENGTH = 20;
+const MAX_CARRIED_REPEATS = 5;
+
+let pendingRepeats = new Set();
+let sessionActive = false;
 
 let currentPosition = 0;
 let sessionQueue = [];
@@ -69,6 +73,28 @@ function saveWeeks() {
     localStorage.setItem("readingCurrentWeek", String(currentWeekIndex));
 }
 
+
+// Offene Aufträge bleiben bis zu einer richtigen Antwort lokal gespeichert.
+function loadPendingRepeats() {
+    try {
+        const saved = JSON.parse(localStorage.getItem("readingPendingRepeats") || "[]");
+        pendingRepeats = new Set(Array.isArray(saved)
+            ? saved.filter(value => typeof value === "string" && value.length > 0)
+            : []);
+    } catch {
+        pendingRepeats = new Set();
+    }
+}
+
+function savePendingRepeats() {
+    localStorage.setItem("readingPendingRepeats", JSON.stringify([...pendingRepeats]));
+}
+
+function removeQueuedRepeat(syllable) {
+    sessionQueue = sessionQueue.filter((task, index) =>
+        index <= currentPosition || !task.isRepeat || task.syllable !== syllable
+    );
+}
 
 // ------------------------------------
 // WOCHEN ANZEIGEN
@@ -225,13 +251,25 @@ function createSession() {
         return false;
     }
 
+    // Entfernte Silben verwerfen, vorbereitete spätere Wochen aber behalten.
+    const knownSyllables = new Set(weeks.flat().map(value => value.toLowerCase()));
+    pendingRepeats = new Set([...pendingRepeats].filter(value =>
+        knownSyllables.has(value.toLowerCase())
+    ));
+    savePendingRepeats();
+
+    const eligibleSyllables = new Set(allSyllables.map(value => value.toLowerCase()));
+    const carriedRepeats = [...pendingRepeats]
+        .filter(value => eligibleSyllables.has(value.toLowerCase()))
+        .slice(0, MAX_CARRIED_REPEATS);
+
     sessionQueue = [];
 
     let lastSyllable = null;
 
     for (
         let i = 0;
-        i < SESSION_LENGTH;
+        i < SESSION_LENGTH - carriedRepeats.length;
         i++
     ) {
 
@@ -281,13 +319,18 @@ function createSession() {
             formatSyllable(syllable);
 
         sessionQueue.push(
-            formattedSyllable
+            { syllable: formattedSyllable, isRepeat: false }
         );
 
         lastSyllable = syllable;
     }
 
+    carriedRepeats.forEach((syllable, index) => {
+        sessionQueue.splice(1 + index * 3, 0, { syllable, isRepeat: true });
+    });
+
     currentPosition = 0;
+    sessionActive = true;
 
     return true;
 }
@@ -300,7 +343,7 @@ function createSession() {
 function showCurrentSyllable() {
 
     const syllable =
-        sessionQueue[currentPosition];
+        sessionQueue[currentPosition].syllable;
 
     document
         .getElementById("syllable-card")
@@ -310,7 +353,7 @@ function showCurrentSyllable() {
     document
         .getElementById("progress")
         .textContent =
-            `Aufgabe ${currentPosition + 1} / max. ${MAX_SESSION_LENGTH}`;
+            `Aufgabe ${currentPosition + 1}`;
 }
 
 
@@ -319,6 +362,13 @@ function showCurrentSyllable() {
 // ------------------------------------
 
 function answerCorrect() {
+
+    if (!sessionActive) return;
+
+    const syllable = sessionQueue[currentPosition].syllable;
+    pendingRepeats.delete(syllable);
+    removeQueuedRepeat(syllable);
+    savePendingRepeats();
 
     currentPosition++;
 
@@ -332,8 +382,15 @@ function answerCorrect() {
 
 function repeatLater() {
 
-    const syllable =
-        sessionQueue[currentPosition];
+    if (!sessionActive) return;
+
+    const syllable = sessionQueue[currentPosition].syllable;
+
+    // Ein Auftrag je Schreibweise; erneut unsichere Silben hinten anstellen.
+    pendingRepeats.delete(syllable);
+    pendingRepeats.add(syllable);
+    savePendingRepeats();
+    removeQueuedRepeat(syllable);
 
     const distance =
         Math.floor(
@@ -350,7 +407,7 @@ function repeatLater() {
     sessionQueue.splice(
         newPosition,
         0,
-        syllable
+        { syllable, isRepeat: true }
     );
 
     currentPosition++;
@@ -370,6 +427,7 @@ function continueSession() {
         currentPosition >= MAX_SESSION_LENGTH
     ) {
 
+        sessionActive = false;
         showScreen(
             "finish-screen"
         );
@@ -525,4 +583,5 @@ document
 // ------------------------------------
 
 loadWeeks();
+loadPendingRepeats();
 renderWeeks();
