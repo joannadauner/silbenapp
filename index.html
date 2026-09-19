@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Silben lesen</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <main class="app">
+
+        <!-- STARTSEITE -->
+        <section id="start-screen" class="screen active">
+
+            <h1>Silben lesen</h1>
+
+            <p class="intro">
+                Welche Silbe siehst du?
+            </p>
+
+            <button
+                id="start-button"
+                class="primary-button"
+            >
+                Übung starten
+            </button>
+
+            <button
+                id="settings-button"
+                class="secondary-button"
+            >
+                Silben einstellen
+            </button>
+
+        </section>
+
+
+        <!-- EINSTELLUNGEN -->
+        <section id="settings-screen" class="screen">
+
+            <h2>Silben einstellen</h2>
+
+            <p>
+                Trage für jede Woche die neu gelernten Silben ein.
+            </p>
+
+            <div id="weeks-container"></div>
+
+            <p>
+                <label for="current-week">Aktuelle Woche:</label>
+                <select id="current-week"></select>
+            </p>
+
+            <button
+                id="add-week-button"
+                class="secondary-button"
+            >
+                + Woche hinzufügen
+            </button>
+
+            <button
+                id="save-settings-button"
+                class="primary-button"
+            >
+                Speichern
+            </button>
+
+            <button
+                id="back-button"
+                class="text-button"
+            >
+                Zurück
+            </button>
+
+        </section>
+
+
+        <!-- ÜBUNG -->
+        <section id="practice-screen" class="screen">
+
+            <div class="practice-header">
+
+                <span id="progress">
+                    Aufgabe 1 / max. 20
+                </span>
+
+            </div>
+
+
+            <div id="syllable-card">
+
+                MA
+
+            </div>
+
+
+            <div class="answer-buttons">
+
+                <button
+                    id="correct-button"
+                    class="correct-button"
+                >
+                    ✓ Richtig
+                </button>
+
+                <button
+                    id="again-button"
+                    class="again-button"
+                >
+                    ↻ Nochmal
+                </button>
+
+                <button
+                    id="dont-know-button"
+                    class="dont-know-button"
+                >
+                    ? Weiß ich nicht
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- ENDE -->
+        <section id="finish-screen" class="screen">
+
+            <h2>Geschafft!</h2>
+
+            <div class="finish-symbol">
+                ★
+            </div>
+
+            <p>
+                Du hast deine Leserunde beendet.
+            </p>
+
+            <button
+                id="restart-button"
+                class="primary-button"
+            >
+                Noch eine Runde
+            </button>
+
+            <button
+                id="finish-home-button"
+                class="secondary-button"
+            >
+                Zur Startseite
+            </button>
+
+        </section>
+
+    </main>
+
+
+    <script src="app.js"></script>
+
+</body>
+</html>

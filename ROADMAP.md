@@ -1,0 +1,577 @@
+# Silben-App – Roadmap
+
+## Projektziel
+
+Die Web-App unterstützt Kinder beim Lesenlernen mit der Silbenmethode.
+
+Eltern können wöchentlich neue Silben eintragen. Die App zeigt freigeschaltete Silben zufällig an und unterstützt Wiederholung, schrittweisen Lernfortschritt und später auch Wörter sowie optional Spracherkennung.
+
+Die Anwendung soll:
+
+- plattformunabhängig funktionieren
+- auf Smartphone, Tablet und Desktop nutzbar sein
+- möglichst datenschutzfreundlich sein
+- ohne Benutzerkonto funktionieren
+- ohne Backend auskommen
+- möglichst einfach wartbar bleiben
+- langfristig auch von anderen Familien genutzt werden können
+
+Technisch soll die App zunächst nur aus:
+
+- HTML
+- CSS
+- Vanilla JavaScript
+
+bestehen.
+
+Keine Frameworks, kein React und keine Datenbank, solange diese nicht wirklich notwendig werden.
+
+---
+
+# Version 0.1 – Grundfunktion
+
+## Ziel
+
+Eine erste vollständig nutzbare Version zum Testen des Lernprinzips.
+
+## Funktionen
+
+- Silben nach Wochen verwalten
+- neue Wochen hinzufügen
+- Silben lokal im Browser speichern
+- Übungsrunde starten
+- 15 reguläre Aufgaben pro Runde
+- zufällige Auswahl der Silben
+- aktuelle Woche stärker gewichten
+- ältere Wochen weiterhin einbeziehen
+- gleiche Silbe möglichst nicht direkt hintereinander anzeigen
+- Silben zufällig darstellen als:
+  - `ma`
+  - `Ma`
+- drei Bewertungen:
+  - Richtig
+  - Nochmal
+  - Weiß ich nicht
+- bei „Nochmal“ oder „Weiß ich nicht“:
+  - Silbe später erneut anzeigen
+  - nicht direkt wiederholen
+  - exakte Schreibweise erhalten
+- Abschlussbildschirm nach der Übungsrunde
+
+## Status
+
+Umgesetzt.
+
+---
+
+# Version 0.2 – Lernlogik verbessern
+
+## Ziel
+
+Die Übungslogik robuster und lernpsychologisch sinnvoller machen.
+
+## 0.2.1 – Aktuelle Woche auswählen
+
+Eltern können festlegen, welche Woche aktuell ist.
+
+Spätere Wochen können bereits vorbereitet werden, ohne automatisch in der Übung zu erscheinen.
+
+Beispiel:
+
+```text
+Woche 1
+ma, mi, mo, mu
+
+Woche 2
+la, li, lo, lu
+
+Woche 3
+sa, si, so, su
+
+Woche 4
+ra, ri, ro, ru
+```
+
+Wenn Woche 2 aktiv ist, dürfen nur Woche 1 und Woche 2 erscheinen.
+
+### Status
+
+Umgesetzt.
+
+---
+
+## 0.2.2 – Wiederholungslogik verbessern
+
+### Ziel
+
+Falsch oder unsicher gelesene Silben sollen zuverlässig erneut erscheinen.
+
+### Gewünschtes Verhalten
+
+- weiterhin 15 reguläre Aufgaben
+- offene Wiederholungen müssen nach Aufgabe 15 noch abgearbeitet werden
+- falsch gelesene Silben dürfen nicht verloren gehen
+- Wiederholung möglichst nach 3–5 anderen Aufgaben
+- bei erneuter falscher Antwort darf die Silbe erneut eingeplant werden
+- exakte Schreibweise bleibt erhalten:
+  - `Ma` wird wieder zu `Ma`
+  - `ma` wird wieder zu `ma`
+- maximal 20 Aufgaben pro Runde
+- dadurch keine Endlosschleifen
+
+### Fortschrittsanzeige
+
+Die Anzeige soll verständlich bleiben, auch wenn die Runde durch Wiederholungen länger wird.
+
+Mögliche Darstellung:
+
+```text
+Aufgabe 12
+```
+
+oder:
+
+```text
+12 / max. 20
+```
+
+Die Darstellung soll ruhig und kindgerecht bleiben.
+
+### Status
+
+Nächster Entwicklungsschritt.
+
+---
+
+# Version 0.3 – Interface vereinfachen
+
+## Ziel
+
+Die Aufmerksamkeit des Kindes stärker auf die Silbe lenken.
+
+## Übungsansicht
+
+Aktuell existieren Textbuttons:
+
+```text
+Richtig
+Nochmal
+Weiß ich nicht
+```
+
+Diese sollen visuell reduziert werden.
+
+Mögliche Darstellung:
+
+```text
+✓    ↻    ?
+```
+
+## Anforderungen
+
+- große Touchflächen
+- geeignet für Tablet und Smartphone
+- klare visuelle Hierarchie
+- Silbe bleibt das wichtigste Element
+- möglichst wenig Ablenkung
+- keine unnötigen Animationen
+- ruhige Rückmeldung statt starker Gamification
+
+---
+
+## Elternmodus
+
+Die App soll zunächst davon ausgehen, dass ein Erwachsener die Antwort bewertet.
+
+Das Kind konzentriert sich hauptsächlich auf die Silbe.
+
+Der Erwachsene bedient:
+
+- Richtig
+- Nochmal
+- Weiß ich nicht
+
+Später kann zusätzlich ein Selbstlernmodus entstehen.
+
+---
+
+# Version 0.4 – Wörter
+
+## Ziel
+
+Neben einzelnen Silben sollen auch einfache Wörter geübt werden können.
+
+## Funktionen
+
+Eltern können Wörter ergänzen, zum Beispiel:
+
+```text
+Mama
+Oma
+Mimi
+Lama
+Momo
+```
+
+Mögliche Übungsformen:
+
+```text
+Mama
+```
+
+oder später:
+
+```text
+Ma | ma
+```
+
+## Datenstruktur
+
+Silben und Wörter sollen getrennt verwaltet werden.
+
+Beispielsweise:
+
+```text
+Übungsmodus:
+
+Silben
+Wörter
+```
+
+Die bestehende Silbenfunktion darf dadurch nicht unnötig kompliziert werden.
+
+---
+
+# Version 0.5 – Selbstlernmodus
+
+## Ziel
+
+Das Kind kann die App auch ohne direkte Bewertung durch einen Erwachsenen verwenden.
+
+## Möglicher Ablauf
+
+```text
+Mi
+
+[Weiter]
+```
+
+Das Kind liest laut und geht anschließend selbst weiter.
+
+Optional:
+
+```text
+Nochmal ansehen
+```
+
+Eine Selbstbewertung mit „richtig“ oder „falsch“ ist nicht notwendig.
+
+---
+
+# Version 0.6 – Spracherkennung experimentell
+
+## Ziel
+
+Die App versucht automatisch zu erkennen, ob die angezeigte Silbe richtig gelesen wurde.
+
+## Grundprinzip
+
+```text
+Silbe erscheint
+↓
+Kind liest laut
+↓
+Spracherkennung
+↓
+Ergebnis prüfen
+```
+
+Mögliche Ergebnisse:
+
+```text
+richtig
+unsicher
+nicht erkannt
+```
+
+Bei Unsicherheit:
+
+```text
+Noch einmal
+```
+
+Nicht sofort:
+
+```text
+Falsch
+```
+
+## Anforderungen
+
+- Kinderstimmen sind schwieriger zu erkennen als Erwachsenenstimmen
+- einzelne Silben sind schwieriger als ganze Wörter
+- keine falsche Sicherheit erzeugen
+- Spracherkennung nur als Zusatzfunktion
+- manueller Modus muss immer verfügbar bleiben
+
+## Datenschutz
+
+Bevorzugt:
+
+- lokale Verarbeitung im Browser
+- keine dauerhafte Speicherung von Audio
+- keine Benutzerkonten
+- keine Übertragung von Sprachdaten, wenn vermeidbar
+
+Cloud-basierte Spracherkennung nur prüfen, wenn lokale Lösungen nicht ausreichend funktionieren und der Datenschutz transparent geklärt ist.
+
+---
+
+# Version 0.7 – Progressive Web App
+
+## Ziel
+
+Die Web-App soll sich wie eine installierbare App verhalten.
+
+## Funktionen
+
+- PWA-Manifest
+- eigenes Icon
+- auf Homescreen installierbar
+- Offline-Nutzung
+- weiterhin normale Nutzung im Browser möglich
+
+Unterstützte Geräte:
+
+- iPhone
+- iPad
+- Android
+- Desktop
+
+---
+
+# Version 0.8 – Nutzung durch andere Familien
+
+## Ziel
+
+Die App soll ohne technische Vorkenntnisse von anderen Eltern genutzt werden können.
+
+## Funktionen
+
+- kurze Einführung
+- verständlicher Elternbereich
+- Beispiel-Silben beim ersten Start
+- Einstellungen zurücksetzen
+- optional Export und Import der Silben
+
+Mögliche Funktion:
+
+```text
+Silbenplan exportieren
+```
+
+Dadurch könnten Eltern oder Lehrkräfte vorbereitete Lernsets teilen, ohne Benutzerkonten oder Datenbank zu benötigen.
+
+---
+
+# Version 0.9 – Lernlogik weiterentwickeln
+
+## Ziel
+
+Die Auswahl der Silben kann später intelligenter gewichtet werden.
+
+Nur umsetzen, wenn Tests zeigen, dass dies sinnvoll ist.
+
+## Mögliche Gewichtung
+
+```text
+aktuelle Woche     50 %
+letzte Woche       25 %
+ältere Wochen      25 %
+```
+
+## Innerhalb einer Sitzung
+
+Zusätzlich könnte berücksichtigt werden:
+
+- häufig falsch gelesene Silben erscheinen häufiger
+- richtig gelesene Silben erscheinen seltener
+- schwierige Silben werden zeitversetzt erneut gezeigt
+
+Wichtig:
+
+Keine dauerhafte Leistungsbewertung des Kindes notwendig.
+
+Die Anpassung kann ausschließlich innerhalb einer Sitzung erfolgen.
+
+---
+
+# Version 1.0 – Öffentliche stabile Version
+
+## Ziel
+
+Eine einfache, stabile und öffentlich nutzbare Lern-App.
+
+## Mindestumfang
+
+- Silben verwalten
+- Wochen verwalten
+- aktuelle Woche auswählen
+- sinnvolle Wiederholungslogik
+- Groß- und Kleinschreibung
+- Elternmodus
+- Wörter
+- einfache Bedienung
+- mobile Nutzung
+- lokale Datenspeicherung
+- PWA
+- Datenschutzhinweise
+- keine Benutzerkonten
+- kein Backend
+
+Spracherkennung ist für Version 1.0 optional und darf die normale Nutzung nicht voraussetzen.
+
+---
+
+# Spätere Ideen
+
+Nicht Teil des aktuellen Entwicklungsziels.
+
+Mögliche Erweiterungen:
+
+- Wortlisten aus vorhandenen Silben generieren
+- Fantasiewörter
+- Lesen ganzer kurzer Sätze
+- Laut-Buchstaben-Training
+- individuelle Gewichtung schwieriger Silben
+- mehrere Lernprofile auf einem Gerät
+- Teilen von Lernsets
+- Lehrkraft-Modus
+- vordefinierte Lernsets für verschiedene Silbenmethoden
+- unterschiedliche Schwierigkeitsstufen
+- optionale Audioausgabe
+- unterschiedliche Übungsmodi
+
+Diese Funktionen sollen erst geprüft werden, wenn die grundlegende App erfolgreich getestet wurde.
+
+---
+
+# Entwicklungsprinzipien
+
+Bei jeder neuen Funktion gilt:
+
+1. Die App soll einfach bleiben.
+2. Bestehende Funktionen dürfen nicht unbeabsichtigt verschwinden.
+3. Datenschutz hat hohe Priorität.
+4. Keine unnötigen Abhängigkeiten einführen.
+5. Keine Frameworks verwenden, solange HTML, CSS und JavaScript ausreichen.
+6. Mobile Nutzung immer mitdenken.
+7. Große Touchflächen verwenden.
+8. Kindgerechte Gestaltung bedeutet nicht automatisch Gamification.
+9. Lernlogik zuerst testen, danach technische Komplexität erhöhen.
+10. Spracherkennung darf nie Voraussetzung für die Nutzung sein.
+11. Neue Funktionen sollen zuerst möglichst einfach umgesetzt und getestet werden.
+12. Die App soll auch ohne technische Vorkenntnisse verständlich bedienbar sein.
+
+---
+
+# Technische Grundstruktur
+
+Die App besteht aktuell aus:
+
+```text
+silben-app/
+│
+├── index.html
+├── style.css
+├── app.js
+├── AGENTS.md
+└── ROADMAP.md
+```
+
+## index.html
+
+Enthält:
+
+- Seitenstruktur
+- Screens
+- Buttons
+- Eingabefelder
+- Elternbereich
+- Übungsbereich
+
+## style.css
+
+Enthält:
+
+- Layout
+- Typografie
+- Größen
+- Touchflächen
+- responsive Gestaltung
+
+## app.js
+
+Enthält:
+
+- Wochenverwaltung
+- localStorage
+- Zufallsauswahl
+- Übungslogik
+- Wiederholungslogik
+- Navigation zwischen Screens
+- Groß- und Kleinschreibung
+- Fortschrittsanzeige
+
+## AGENTS.md
+
+Enthält Regeln dafür, wie Codex am Projekt arbeiten soll.
+
+## ROADMAP.md
+
+Enthält Entwicklungsziele und geplante Versionen.
+
+---
+
+# Aktueller Entwicklungsstand
+
+Aktuell vorhanden:
+
+- HTML/CSS/JavaScript-Projekt
+- lokale Entwicklung mit VS Code
+- Live Server
+- Wochenverwaltung
+- localStorage
+- neue Wochen hinzufügen
+- zufällige Silbenauswahl
+- Gewichtung der aktuellen Woche
+- Auswahl der aktuellen Woche
+- nur aktuelle und vorherige Wochen werden verwendet
+- zufällige Groß-/Kleinschreibung
+- exakte Schreibweise bei Wiederholung
+- Richtig / Nochmal / Weiß ich nicht
+- Abschlussbildschirm
+- Codex in VS Code eingerichtet
+
+---
+
+# Aktueller nächster Schritt
+
+## Version 0.2.2
+
+Wiederholungslogik vollständig abschließen.
+
+Ziel:
+
+- 15 reguläre Aufgaben
+- Wiederholungen auch nach Aufgabe 15 anzeigen
+- maximal 20 Aufgaben
+- keine offenen Wiederholungen verlieren
+- exakte Schreibweise beibehalten
+- verständliche Fortschrittsanzeige
+
+Danach:
+
+## Version 0.3
+
+Interface der Übungsansicht vereinfachen.
