@@ -919,27 +919,38 @@ if (versionLabel.textContent === "__APP_VERSION__") {
 let updateRegistration = null;
 let updateRequested = false;
 let updateTimeout = null;
+let requestedWorker = null;
+let updateReloading = false;
 const updatePanel = document.getElementById("app-update");
 const updateButton = document.getElementById("app-update-button");
 const updateStatus = document.getElementById("app-update-status");
 
 function showAvailableUpdate() {
-    updatePanel.hidden = !updateRegistration?.waiting;
+    updatePanel.hidden = !updateRegistration?.waiting && !requestedWorker;
     if (!updatePanel.hidden && !updateRequested) {
         updateStatus.textContent = "Update verfügbar";
     }
     scheduleLayoutUpdate();
 }
 
+function finishRequestedUpdate() {
+    if (!updateRequested || updateReloading || sessionActive ||
+        requestedWorker?.state !== "activated") return;
+    updateReloading = true;
+    clearTimeout(updateTimeout);
+    location.reload();
+}
+
 updateButton.addEventListener("click", () => {
     if (sessionActive || updateRequested ||
         !document.getElementById("start-screen").classList.contains("active")) return;
-    const worker = updateRegistration?.waiting;
+    const worker = updateRegistration?.waiting || requestedWorker;
     if (!worker) {
         showAvailableUpdate();
         return;
     }
     updateRequested = true;
+    requestedWorker = worker;
     updateButton.disabled = true;
     document.getElementById("start-button").disabled = true;
     document.getElementById("settings-button").disabled = true;
@@ -951,7 +962,9 @@ updateButton.addEventListener("click", () => {
         document.getElementById("settings-button").disabled = false;
         updateStatus.textContent = "Update noch nicht abgeschlossen. Bitte erneut versuchen.";
     }, 10000);
-    worker.postMessage({ type: "ACTIVATE_UPDATE" });
+    worker.addEventListener("statechange", finishRequestedUpdate);
+    if (worker.state === "activated") finishRequestedUpdate();
+    else worker.postMessage({ type: "ACTIVATE_UPDATE" });
 });
 
 // Auf Live Server bleibt die Entwicklung ohne Cache; lokal ist ?pwa-test=1 möglich.
@@ -959,9 +972,7 @@ if ("serviceWorker" in navigator && window.isSecureContext &&
     (location.protocol === "https:" || new URLSearchParams(location.search).has("pwa-test"))) {
     navigator.serviceWorker.addEventListener("controllerchange", () => {
         // Andere offene App-Fenster dürfen keine laufende Runde neu laden.
-        if (!updateRequested) return;
-        clearTimeout(updateTimeout);
-        location.reload();
+        finishRequestedUpdate();
     });
     window.addEventListener("load", async () => {
         try {
@@ -969,12 +980,14 @@ if ("serviceWorker" in navigator && window.isSecureContext &&
                 updateViaCache: "none"
             });
             showAvailableUpdate();
-            updateRegistration.addEventListener("updatefound", () => {
+            const watchInstallingWorker = () => {
                 const worker = updateRegistration.installing;
                 worker?.addEventListener("statechange", () => {
-                    if (worker.state === "installed") showAvailableUpdate();
+                    showAvailableUpdate();
                 });
-            });
+            };
+            updateRegistration.addEventListener("updatefound", watchInstallingWorker);
+            watchInstallingWorker();
             const checkForUpdate = () => {
                 if (!document.hidden) {
                     updateRegistration.update().catch(() => {});

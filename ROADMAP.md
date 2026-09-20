@@ -712,3 +712,13 @@ großen Augen in App-Blau (#1327e3), Akzenten in App-Rot (#ff0000), weißem
 Stickerrand und Schatten. Der Stern ist gegenüber der bisherigen Auszeichnung
 um 25 % größer und bleibt zentriert. Das SVG
 orientiert sich an der bereitgestellten Vorlage. Die Vergabelogik bleibt unverändert.
+
+
+## Update-Korrektur nach Praxistest
+
+Beim Installieren eines Updates werden alle App-Dateien mit `cache: reload`
+angefordert, damit alte HTTP-Cache-Dateien nicht in den neuen Offline-Cache gelangen.
+Nach Aktivierung übernimmt der Worker die Clients. Der Update-Button wartet auf
+den aktivierten Worker, lädt nur einmal neu und erlaubt nach einer Zeitüberschreitung
+einen erneuten Versuch. Andere Fenster laden weiterhin nicht automatisch neu.
+Logikprüfungen bestanden; erneuter Update-Test auf dem iPad steht aus.
