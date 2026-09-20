@@ -682,3 +682,12 @@ bleiben scrollbar. Prüfung auf echten Geräten steht noch aus.
 Nachbesserung der Drehungsaktualisierung: zusätzliches Orientierungsereignis,
 Beobachtung der tatsächlichen Layoutgrößen und erneute Ausrichtung nach 350 ms.
 Der gemeldete Fehler muss mit dieser Version noch auf dem iPad nachgetestet werden.
+
+
+## Elternübersicht: nicht sofort erkannte Einträge
+
+„Nicht sofort erkannt“ listet alle in der abgeschlossenen Runde mit „Nochmal“
+bewerteten Silben und Wörter auf, auch wenn sie später richtig gelesen wurden.
+Jede exakte Schreibweise erscheint einmal, Wörter behalten ihre Silbenfarben.
+Die Liste wird für jede neue Runde zurückgesetzt und nicht dauerhaft gespeichert.
+Die separate Liste der noch offenen Wiederholungen bleibt unverändert.

@@ -12,6 +12,7 @@ let sessionActive = false;
 let answerFeedbackTimer = null;
 let hadUncertainAnswer = false;
 let sessionUnresolved = new Set();
+let sessionPracticed = new Set();
 
 let currentPosition = 0;
 let sessionProgress = 0;
@@ -442,6 +443,7 @@ function createSession() {
     resetAnswerFeedback();
     hadUncertainAnswer = false;
     sessionUnresolved = new Set();
+    sessionPracticed = new Set();
     sessionActive = true;
 
     return true;
@@ -618,6 +620,7 @@ function repeatLater() {
     const syllable = sessionQueue[currentPosition].syllable;
     hadUncertainAnswer = true;
     sessionUnresolved.add(syllable);
+    sessionPracticed.add(syllable);
 
     // Ein Auftrag je Schreibweise; erneut unsichere Silben hinten anstellen.
     pendingRepeats.delete(syllable);
@@ -670,18 +673,26 @@ function showSessionFeedback() {
 
 function renderParentOverview() {
     document.getElementById("parent-overview").open = false;
-    const list = document.getElementById("parent-repeat-list");
+    renderParentList("parent-practiced-list", sessionPracticed);
+    document.getElementById("parent-practiced-description").textContent = sessionPracticed.size
+        ? "Bei diesen Silben und Wörtern wurde in dieser Runde „Nochmal“ gewählt – auch wenn sie danach richtig gelesen wurden. Jede Schreibweise steht nur einmal in der Liste."
+        : "In dieser Runde wurde alles sofort erkannt.";
+    renderParentList("parent-repeat-list", pendingRepeats);
+    document.getElementById("parent-repeat-description").textContent = pendingRepeats.size
+        ? "Noch offene Silben und Wörter, auch aus früheren Runden. Einträge aus abgewählten Wochen warten, bis diese wieder ausgewählt sind."
+        : "Es sind keine Wiederholungen mehr offen.";
+}
+
+function renderParentList(id, syllables) {
+    const list = document.getElementById(id);
     list.replaceChildren();
-    for (const syllable of pendingRepeats) {
+    for (const syllable of syllables) {
         const item = document.createElement("li");
         const text = document.createElement("p");
         renderReadingText(text, syllable);
         item.appendChild(text);
         list.appendChild(item);
     }
-    document.getElementById("parent-repeat-description").textContent = pendingRepeats.size
-        ? "Noch offene Silben und Wörter, auch aus früheren Runden. Einträge aus abgewählten Wochen warten, bis diese wieder ausgewählt sind."
-        : "Es sind keine Wiederholungen mehr offen.";
 }
 
 function continueSession() {

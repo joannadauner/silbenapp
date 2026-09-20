@@ -362,12 +362,12 @@ button {
     outline-offset: 4px;
 }
 
-#parent-repeat-list {
+.parent-overview ul {
     padding-left: 24px;
     overflow-wrap: anywhere;
 }
 
-#parent-repeat-list p {
+.parent-overview li p {
     margin: 0;
     font-size: 24px;
     font-weight: 600;
