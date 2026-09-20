@@ -70,29 +70,27 @@ Umgesetzt.
 
 Die Übungslogik robuster und lernpsychologisch sinnvoller machen.
 
-## 0.2.1 – Aktuelle Woche auswählen
+## 0.2.1 – Übungswochen per Checkbox auswählen
 
-Eltern können festlegen, welche Woche aktuell ist.
+Eltern wählen unter „Silben einstellen“ beliebige Wochen unabhängig voneinander
+über Checkboxen aus. Das Dropdown für eine einzelne aktuelle Woche entfällt.
+Nur angehakte Wochen werden für neue Aufgaben und offene Wiederholungen verwendet.
 
-Spätere Wochen können bereits vorbereitet werden, ohne automatisch in der Übung zu erscheinen.
+Beispiel: Sind Woche 1 und Woche 3 angehakt, werden nur deren Silben geübt.
+Woche 2 wird nicht automatisch einbezogen. Woche 3 ist als höchste ausgewählte
+Woche bei der Erzeugung neuer Aufgaben stärker gewichtet: Sind beide Silbenpools
+gefüllt, entfallen 60 % der Auswahlwahrscheinlichkeit auf diese Woche und 40 %
+auf die übrigen ausgewählten Wochen zusammen. Das ist keine feste Quote pro Runde.
 
-Beispiel:
+Die Auswahl wird in localStorage gespeichert. Beim ersten Laden mit der neuen
+Auswahl werden die bisher aktuelle und ihre vorherigen Wochen als Häkchen übernommen.
+Neu hinzugefügte Wochen sind zunächst abgewählt. Zum Start muss mindestens eine
+Woche mit Silben ausgewählt sein.
 
-```text
-Woche 1
-ma, mi, mo, mu
-
-Woche 2
-la, li, lo, lu
-
-Woche 3
-sa, si, so, su
-
-Woche 4
-ra, ri, ro, ru
-```
-
-Wenn Woche 2 aktiv ist, dürfen nur Woche 1 und Woche 2 erscheinen.
+Offene Wiederholungen bleiben beim Abwählen einer Woche gespeichert. Sie warten,
+bis ihre Silbe wieder in einer ausgewählten Woche enthalten ist. Kommt dieselbe
+Silbe auch in einer anderen angehakten Woche vor, darf sie weiterhin geübt werden.
+Die exakte Schreibweise des Wiederholungsauftrags bleibt erhalten.
 
 ### Status
 
@@ -117,7 +115,8 @@ Falsch oder unsicher gelesene Silben sollen zuverlässig erneut erscheinen.
 - pro exakter Schreibweise nur ein offener Auftrag (`Ma` und `ma` bleiben getrennt)
 - „Richtig“ erledigt den Auftrag und entfernt seine noch eingeplante Wiederholung
 - übernommene Aufträge bleiben bis zur richtigen Antwort gespeichert, auch bei Neuladen
-- spätere Wochen bleiben ausgeschlossen; ihre offenen Aufträge warten auf Freischaltung
+- nur ausgewählte Wochen werden verwendet; offene Aufträge für Silben außerhalb
+  dieser Auswahl bleiben gespeichert und warten auf erneute Auswahl
 - aus den Wochen entfernte Silben werden beim nächsten gültigen Rundenstart bereinigt
 
 ### Fortschrittsanzeige
@@ -406,7 +405,7 @@ Eine einfache, stabile und öffentlich nutzbare Lern-App.
 
 - Silben verwalten
 - Wochen verwalten
-- aktuelle Woche auswählen
+- Übungswochen unabhängig per Checkbox auswählen
 - sinnvolle Wiederholungslogik
 - Groß- und Kleinschreibung
 - Elternmodus
@@ -534,9 +533,9 @@ Aktuell vorhanden:
 - localStorage
 - neue Wochen hinzufügen
 - zufällige Silbenauswahl
-- Gewichtung der aktuellen Woche
-- Auswahl der aktuellen Woche
-- nur aktuelle und vorherige Wochen werden verwendet
+- stärkere Gewichtung der höchsten ausgewählten Woche
+- freie Wochenauswahl per Checkbox mit lokaler Speicherung
+- nur ausgewählte Wochen werden verwendet
 - zufällige Groß-/Kleinschreibung
 - exakte Schreibweise bei Wiederholung
 - 15 Startaufgaben mit eingemischten offenen Wiederholungen, maximal 20 Aufgaben

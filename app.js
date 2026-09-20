@@ -13,6 +13,7 @@ let currentPosition = 0;
 let sessionQueue = [];
 let weeks = [];
 let currentWeekIndex = 0;
+let selectedWeeks = [];
 
 
 // ------------------------------------
@@ -60,6 +61,20 @@ function loadWeeks() {
         Number.isInteger(savedIndex) && savedIndex >= 0 && savedIndex < weeks.length
         ? savedIndex
         : Math.max(0, weeks.length - 1);
+
+    // Bisherige Auswahl einmalig in Checkboxen übernehmen.
+    let savedSelection = null;
+    try {
+        savedSelection = JSON.parse(localStorage.getItem("readingSelectedWeeks"));
+    } catch {
+        // Bei ungültigen Daten die bisher freigegebenen Wochen verwenden.
+    }
+    selectedWeeks = Array.isArray(savedSelection)
+        ? [...new Set(savedSelection.filter(index =>
+            Number.isInteger(index) && index >= 0 && index < weeks.length
+        ))].sort((a, b) => a - b)
+        : weeks.map((week, index) => index).filter(index => index <= currentWeekIndex);
+
 }
 
 
@@ -70,7 +85,7 @@ function saveWeeks() {
         JSON.stringify(weeks)
     );
 
-    localStorage.setItem("readingCurrentWeek", String(currentWeekIndex));
+    localStorage.setItem("readingSelectedWeeks", JSON.stringify(selectedWeeks));
 }
 
 
@@ -114,32 +129,33 @@ function renderWeeks() {
 
         div.className = "week";
 
-        div.innerHTML = `
-            <label>
-                Woche ${index + 1}
-            </label>
+        const selectionLabel = document.createElement("label");
+        selectionLabel.className = "week-selection";
 
-            <input
-                type="text"
-                value="${week.join(", ")}"
-                data-week="${index}"
-                placeholder="ma, mi, mo, mu"
-            >
-        `;
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.dataset.week = String(index);
+        checkbox.checked = selectedWeeks.includes(index);
+        selectionLabel.appendChild(checkbox);
+
+        const title = document.createElement("span");
+        title.textContent = `Woche ${index + 1} üben`;
+        selectionLabel.appendChild(title);
+        div.appendChild(selectionLabel);
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = week.join(", ");
+        input.dataset.week = String(index);
+        input.placeholder = "ma, mi, mo, mu";
+        input.setAttribute("aria-label", `Silben für Woche ${index + 1}`);
+        div.appendChild(input);
 
         container.appendChild(div);
 
     });
 
-    const currentWeekSelect = document.getElementById("current-week");
-    currentWeekSelect.innerHTML = "";
-    weeks.forEach((week, index) => {
-        const option = document.createElement("option");
-        option.value = String(index);
-        option.textContent = `Woche ${index + 1}`;
-        currentWeekSelect.appendChild(option);
-    });
-    currentWeekSelect.value = String(currentWeekIndex);
+
 }
 
 
@@ -163,11 +179,13 @@ function addWeek() {
 
 function readWeeksFromForm() {
 
-    currentWeekIndex = Number(document.getElementById("current-week").value);
+    selectedWeeks = Array.from(document.querySelectorAll(
+        '#weeks-container input[type="checkbox"]:checked'
+    )).map(input => Number(input.dataset.week));
 
     const inputs =
         document.querySelectorAll(
-            "#weeks-container input"
+            '#weeks-container input[type="text"]'
         );
 
     weeks = Array.from(inputs).map(input => {
@@ -231,27 +249,21 @@ function formatSyllable(syllable) {
 
 function createSession() {
 
-    const currentWeek =
-        weeks[currentWeekIndex] || [];
-
-    const olderWeeks =
-        weeks
-            .slice(0, currentWeekIndex)
-            .flat();
-
-    const allSyllables =
-        weeks.slice(0, currentWeekIndex + 1).flat();
+    const selectedWeekData = weeks.filter((week, index) => selectedWeeks.includes(index));
+    const currentWeek = selectedWeekData[selectedWeekData.length - 1] || [];
+    const olderWeeks = selectedWeekData.slice(0, -1).flat();
+    const allSyllables = selectedWeekData.flat();
 
     if (allSyllables.length === 0) {
 
         alert(
-            "Bitte zuerst Silben eintragen."
+            "Bitte mindestens eine Woche mit Silben zum Üben auswählen."
         );
 
         return false;
     }
 
-    // Entfernte Silben verwerfen, vorbereitete spätere Wochen aber behalten.
+    // Entfernte Silben verwerfen, abgewählte Wochen aber behalten.
     const knownSyllables = new Set(weeks.flat().map(value => value.toLowerCase()));
     pendingRepeats = new Set([...pendingRepeats].filter(value =>
         knownSyllables.has(value.toLowerCase())

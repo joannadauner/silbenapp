@@ -160,7 +160,7 @@ button {
     margin-bottom: 10px;
 }
 
-.week input {
+.week input[type="text"] {
     width: 100%;
 
     padding: 14px;
@@ -172,6 +172,22 @@ button {
     border-radius: 8px;
 }
 
+
+.week .week-selection {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+    cursor: pointer;
+}
+
+.week-selection input[type="checkbox"] {
+    width: 24px;
+    height: 24px;
+    margin: 0;
+    flex-shrink: 0;
+    accent-color: #222;
+}
 
 /* ENDE */
 

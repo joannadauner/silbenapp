@@ -4,8 +4,9 @@ Diese Web-App unterstützt Kinder beim Lesenlernen mit der Silbenmethode.
 
 ## Lernlogik
 - Eltern tragen jede Woche neue Silben ein.
-- Geübt werden die aktuelle Woche und alle vorherigen Wochen.
-- Die aktuelle Woche wird stärker gewichtet.
+- Eltern wählen die Übungswochen unabhängig voneinander per Checkbox aus;
+  nur ausgewählte Wochen werden verwendet. Die Auswahl bleibt lokal gespeichert.
+- Die höchste ausgewählte Woche wird bei neuen Aufgaben stärker gewichtet.
 - Silben erscheinen zufällig klein oder mit großem Anfangsbuchstaben.
 - Wenn eine Silbe mit „Nochmal“ oder „Weiß ich nicht“ markiert wird,
   muss bei der Wiederholung exakt dieselbe Schreibweise erscheinen.
@@ -14,7 +15,8 @@ Diese Web-App unterstützt Kinder beim Lesenlernen mit der Silbenmethode.
 - Offene Wiederholungen werden in localStorage gespeichert und in spätere Runden
   übernommen. Pro exakter Schreibweise gibt es nur einen offenen Auftrag.
 - „Richtig“ erledigt den Auftrag für diese Schreibweise. Wiederholungen erscheinen
-  möglichst nach 3–5 anderen Aufgaben; spätere Wochen bleiben ausgeschlossen.
+  möglichst nach 3–5 anderen Aufgaben. Aufträge für Silben, die in keiner
+  ausgewählten Woche vorkommen, bleiben gespeichert und warten auf erneute Auswahl.
 - Es gibt keine Leben und keinen Fehlerabbruch. Die Anzeige lautet „Aufgabe 12“.
 - Später sollen auch Wörter und optionale Spracherkennung hinzukommen.
 
