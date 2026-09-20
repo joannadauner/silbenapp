@@ -865,6 +865,7 @@ renderWeeks();
 
 // Nach Größenänderungen erst mit den aktuellen Layoutmaßen ausrichten.
 let layoutFrame = null;
+let layoutSettleTimer = null;
 function scheduleLayoutUpdate() {
     if (layoutFrame !== null) cancelAnimationFrame(layoutFrame);
     layoutFrame = requestAnimationFrame(() => {
@@ -873,15 +874,30 @@ function scheduleLayoutUpdate() {
     });
 }
 
-scheduleLayoutUpdate();
-window.addEventListener("resize", scheduleLayoutUpdate);
-window.addEventListener("pageshow", scheduleLayoutUpdate);
-window.visualViewport?.addEventListener("resize", scheduleLayoutUpdate);
-window.screen.orientation?.addEventListener("change", scheduleLayoutUpdate);
+function refreshViewportLayout() {
+    scheduleLayoutUpdate();
+    // Die endgültigen Maße können erst nach der Drehanimation vorliegen.
+    clearTimeout(layoutSettleTimer);
+    layoutSettleTimer = setTimeout(scheduleLayoutUpdate, 350);
+}
+
+refreshViewportLayout();
+window.addEventListener("resize", refreshViewportLayout);
+window.addEventListener("pageshow", refreshViewportLayout);
+window.visualViewport?.addEventListener("resize", refreshViewportLayout);
+window.screen.orientation?.addEventListener("change", refreshViewportLayout);
+window.addEventListener("orientationchange", refreshViewportLayout);
+// Reagiert auch auf später eintreffende Layoutmaße und Änderungen im Split View.
+// Die Texttransformationen ändern die beobachteten Boxgrößen nicht.
+if ("ResizeObserver" in window) {
+    const layoutObserver = new ResizeObserver(scheduleLayoutUpdate);
+    layoutObserver.observe(document.documentElement);
+    layoutObserver.observe(document.querySelector(".app"));
+}
 document.addEventListener("visibilitychange", () => {
-    if (!document.hidden) scheduleLayoutUpdate();
+    if (!document.hidden) refreshViewportLayout();
 });
-document.fonts.ready.then(scheduleLayoutUpdate);
+document.fonts.ready.then(refreshViewportLayout);
 
 // Auf Live Server bleibt die Entwicklung ohne Cache; lokal ist ?pwa-test=1 möglich.
 if ("serviceWorker" in navigator && window.isSecureContext &&

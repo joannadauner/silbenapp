@@ -678,3 +678,7 @@ auch auf Tablets nebeneinander. Schmale Bildschirme berücksichtigen die Buttonr
 Nach Fenstergrößenänderung, Drehung und Wiederöffnen wird die Heftlinienausrichtung
 im nächsten Animationsframe aktualisiert. Längere Einstellungen und Elternlisten
 bleiben scrollbar. Prüfung auf echten Geräten steht noch aus.
+
+Nachbesserung der Drehungsaktualisierung: zusätzliches Orientierungsereignis,
+Beobachtung der tatsächlichen Layoutgrößen und erneute Ausrichtung nach 350 ms.
+Der gemeldete Fehler muss mit dieser Version noch auf dem iPad nachgetestet werden.
