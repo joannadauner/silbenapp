@@ -1,3 +1,8 @@
+:root {
+    --dark-blue: #1327e3;
+    --notebook-line-spacing: 32px;
+}
+
 * {
     box-sizing: border-box;
 }
@@ -12,8 +17,24 @@ body {
         "Segoe UI",
         sans-serif;
 
-    background: #f5f5f5;
-    color: #222;
+    /* Heftpapier: linke Randlinie und gleichmäßige Schreiblinien. */
+    background-color: #fffef9;
+    background-image:
+        linear-gradient(
+            to right,
+            transparent calc(clamp(14px, 6vw, 72px) - 1px),
+            #e9b5b5 calc(clamp(14px, 6vw, 72px) - 1px),
+            #e9b5b5 clamp(14px, 6vw, 72px),
+            transparent clamp(14px, 6vw, 72px)
+        ),
+        repeating-linear-gradient(
+            to bottom,
+            transparent 0,
+            transparent calc(var(--notebook-line-spacing) - 1px),
+            #dce5f2 calc(var(--notebook-line-spacing) - 1px),
+            #dce5f2 var(--notebook-line-spacing)
+        );
+    color: var(--dark-blue);
 }
 
 
@@ -82,13 +103,13 @@ button {
 }
 
 .primary-button {
-    background: #222;
+    background: var(--dark-blue);
     color: white;
 }
 
 .secondary-button {
     background: #e5e5e5;
-    color: #222;
+    color: var(--dark-blue);
 }
 
 .text-button {
@@ -107,12 +128,26 @@ button {
     color: #777;
 }
 
+.syllable-panel {
+    position: relative;
+    width: max-content;
+    max-width: 100%;
+    margin: 40px auto;
+}
+
+.baseline-marker {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    vertical-align: baseline;
+}
+
 #syllable-card {
     font-size: clamp(90px, 20vw, 170px);
 
     font-weight: 700;
 
-    margin: 40px 0 0;
+    margin: 0;
 
     letter-spacing: 3px;
 }
@@ -120,16 +155,48 @@ button {
 
 /* ANTWORTBUTTONS */
 
+#syllable-card.two-syllable-word {
+    font-size: clamp(64px, 16vw, 140px);
+    white-space: nowrap;
+}
+
+.first-syllable {
+    color: var(--dark-blue);
+}
+
+.second-syllable {
+    color: #ff0000;
+}
+
 .answer-feedback {
-    height: 70px;
-    margin-bottom: 16px;
+    position: absolute;
+    inset: 0;
+    transform: translateY(var(--syllable-line-offset, 0px));
+    z-index: 1;
+    pointer-events: none;
+}
+
+.answer-feedback > [data-answer-feedback] {
+    position: absolute;
+    left: calc(100% + 12px);
+    top: 50%;
+    width: min(clamp(126px, 28vw, 210px), max(0px, calc(50vw - 50% - 32px)));
+    transform: translateY(-50%);
 }
 
 .answer-feedback svg {
     display: block;
-    width: 64px;
-    height: 64px;
+    width: 100%;
+    height: auto;
     margin: 0 auto;
+}
+
+.answer-feedback svg {
+    overflow: visible;
+}
+
+.feedback-sticker {
+    filter: drop-shadow(1px 3px 3px rgb(0 0 0 / 28%));
 }
 
 .answer-buttons button:disabled {
@@ -155,15 +222,55 @@ button {
     align-items: center;
 }
 
+.answer-buttons button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border: 6px solid #fff;
+    border-radius: 24px;
+    box-shadow: 1px 4px 7px rgb(0 0 0 / 24%);
+}
+
+.answer-buttons button:focus-visible,
+.end-practice-button:focus-visible {
+    outline: 3px solid var(--dark-blue);
+    outline-offset: 4px;
+}
+
+.end-practice-button {
+    display: block;
+    width: 52px;
+    height: 52px;
+    margin: 0 0 20px auto;
+    padding: 8px;
+    border: 4px solid #fff;
+    border-radius: 16px;
+    background: #e8e8e8;
+    color: var(--dark-blue);
+    box-shadow: 1px 3px 6px rgb(0 0 0 / 22%);
+}
+
+.end-practice-button svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.button-icon {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+}
+
 .correct-button {
-    background: #222;
+    background: var(--dark-blue);
     color: white;
 }
 
-.again-button,
-.dont-know-button {
+.again-button {
     background: #e8e8e8;
-    color: #222;
+    color: var(--dark-blue);
 }
 
 
@@ -190,6 +297,7 @@ button {
 }
 
 .week input[type="text"] {
+    color: var(--dark-blue);
     width: 100%;
 
     padding: 14px;
@@ -215,7 +323,7 @@ button {
     height: 24px;
     margin: 0;
     flex-shrink: 0;
-    accent-color: #222;
+    accent-color: var(--dark-blue);
 }
 
 /* ENDE */
@@ -229,4 +337,53 @@ button {
     display: block;
     width: 100%;
     height: auto;
+}
+
+
+/* Textgrundlinien folgen dem Heftpapier, auch bei mehrzeiligen Absätzen. */
+.screen h1,
+.screen h2 {
+    line-height: calc(2 * var(--notebook-line-spacing));
+}
+
+.screen p,
+.week-selection > span,
+.week input[type="text"] {
+    line-height: var(--notebook-line-spacing);
+}
+
+.week-selection > span {
+    display: inline-block;
+}
+
+.screen h1,
+.screen h2,
+.screen p,
+#syllable-card,
+.week-selection > span,
+.week input[type="text"] {
+    transform: translateY(var(--line-offset, 0px));
+}
+
+.week input[type="text"] {
+    font-family: inherit;
+}
+
+
+.progress-sticker {
+    width: min(100%, 360px);
+    height: 32px;
+    margin: 0 auto;
+    border: 6px solid #fff;
+    border-radius: 999px;
+    background: #e4f4e9;
+    box-shadow: 1px 3px 6px rgb(0 0 0 / 22%);
+    overflow: hidden;
+}
+
+.progress-fill {
+    width: 0%;
+    height: 100%;
+    border-radius: inherit;
+    background: #40e866;
 }

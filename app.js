@@ -5,7 +5,7 @@
 const SESSION_LENGTH = 15;
 const MAX_SESSION_LENGTH = 20;
 const MAX_CARRIED_REPEATS = 5;
-const ANSWER_FEEDBACK_MS = 600;
+const ANSWER_FEEDBACK_MS = 1000;
 
 let pendingRepeats = new Set();
 let sessionActive = false;
@@ -14,6 +14,7 @@ let hadUncertainAnswer = false;
 let sessionUnresolved = new Set();
 
 let currentPosition = 0;
+let sessionProgress = 0;
 let sessionQueue = [];
 let weeks = [];
 let currentWeekIndex = 0;
@@ -35,6 +36,8 @@ function showScreen(screenId) {
     document
         .getElementById(screenId)
         .classList.add("active");
+
+    alignTextToNotebook();
 }
 
 
@@ -151,15 +154,15 @@ function renderWeeks() {
         input.type = "text";
         input.value = week.join(", ");
         input.dataset.week = String(index);
-        input.placeholder = "ma, mi, mo, mu";
-        input.setAttribute("aria-label", `Silben für Woche ${index + 1}`);
+        input.placeholder = "ma, mi, O-mi, Mo-mo";
+        input.setAttribute("aria-label", `Silben und Wörter für Woche ${index + 1}`);
         div.appendChild(input);
 
         container.appendChild(div);
 
     });
 
-
+    alignTextToNotebook();
 }
 
 
@@ -200,6 +203,7 @@ function readWeeksFromForm() {
                 syllable =>
                     syllable
                         .trim()
+                        .replace(/\s*-\s*/g, "-")
                         .toLowerCase()
             )
             .filter(
@@ -346,6 +350,8 @@ function createSession() {
     });
 
     currentPosition = 0;
+    sessionProgress = 0;
+    renderProgress();
     resetAnswerFeedback();
     hadUncertainAnswer = false;
     sessionUnresolved = new Set();
@@ -364,15 +370,83 @@ function showCurrentSyllable() {
     const syllable =
         sessionQueue[currentPosition].syllable;
 
-    document
-        .getElementById("syllable-card")
-        .textContent =
-            syllable;
+    const card = document.getElementById("syllable-card");
+    const parts = syllable.split("-");
+    const isWord = parts.length === 2 && parts.every(part => part.length > 0);
 
-    document
-        .getElementById("progress")
-        .textContent =
-            `Aufgabe ${currentPosition + 1}`;
+    card.classList.toggle("two-syllable-word", isWord);
+    card.textContent = "";
+    if (isWord) {
+        parts.forEach((part, index) => {
+            const span = document.createElement("span");
+            span.className = index === 0 ? "first-syllable" : "second-syllable";
+            span.textContent = part;
+            card.appendChild(span);
+        });
+    } else {
+        card.textContent = syllable;
+    }
+    card.setAttribute("aria-label", isWord ? parts.join("") : syllable);
+
+    // Ein leeres Inline-Element markiert die tatsächliche Schriftgrundlinie.
+    const baseline = document.createElement("span");
+    baseline.className = "baseline-marker";
+    baseline.setAttribute("aria-hidden", "true");
+    card.appendChild(baseline);
+
+    renderProgress();
+
+    alignTextToNotebook();
+}
+
+function alignTextToNotebook() {
+    const spacing = parseFloat(getComputedStyle(document.body)
+        .getPropertyValue("--notebook-line-spacing"));
+    const lineCenter = spacing - 0.5;
+    const targets = document.querySelectorAll(
+        '.screen.active h1, .screen.active h2, .screen.active p, ' +
+        '.screen.active #syllable-card, ' +
+        '.screen.active .week-selection > span, .screen.active .week input[type="text"]'
+    );
+
+    // Transformationen ändern den Textfluss nicht. Erst alle alten Versätze löschen.
+    targets.forEach(target => target.style.setProperty("--line-offset", "0px"));
+    targets.forEach(target => {
+        let baselineY;
+        if (target.matches('input')) {
+            // Eingabefelder erlauben keine Kindelemente: gleiche Schrift separat messen.
+            const style = getComputedStyle(target);
+            const probe = document.createElement("div");
+            probe.style.cssText = "position:fixed;top:0;left:0;visibility:hidden;pointer-events:none;";
+            probe.style.font = style.font;
+            probe.style.lineHeight = style.lineHeight;
+            const marker = document.createElement("span");
+            marker.className = "baseline-marker";
+            probe.appendChild(marker);
+            document.body.appendChild(probe);
+            baselineY = target.getBoundingClientRect().top + window.scrollY
+                + parseFloat(style.borderTopWidth) + parseFloat(style.paddingTop)
+                + marker.getBoundingClientRect().top;
+            probe.remove();
+        } else {
+            let marker = target.querySelector(".baseline-marker");
+            if (!marker) {
+                marker = document.createElement("span");
+                marker.className = "baseline-marker";
+                marker.setAttribute("aria-hidden", "true");
+                target.appendChild(marker);
+            }
+            baselineY = marker.getBoundingClientRect().top + window.scrollY;
+        }
+        const nearestLine = Math.round((baselineY - lineCenter) / spacing)
+            * spacing + lineCenter;
+        target.style.setProperty("--line-offset", `${nearestLine - baselineY}px`);
+        if (target.id === "syllable-card") {
+            target.parentElement.style.setProperty(
+                "--syllable-line-offset", `${nearestLine - baselineY}px`
+            );
+        }
+    });
 }
 
 
@@ -392,7 +466,24 @@ function resetAnswerFeedback() {
     });
 }
 
+function renderProgress() {
+    const percent = Math.min(100, Math.max(0, sessionProgress * 100));
+    document.getElementById("progress-fill").style.width = `${percent}%`;
+    document.getElementById("progress").setAttribute("aria-valuenow", String(Math.round(percent)));
+}
+
 function showAnswerFeedback(result) {
+    // Fortschritt bleibt bei Wiederholungen stehen und geht nie zurück.
+    if (result === "correct") {
+        const remaining = sessionQueue.length - currentPosition;
+        sessionProgress += (1 - sessionProgress) / remaining;
+    }
+    // Die letzte Rückmeldung zeigt bereits den vollen Balken vor dem Abschluss.
+    if (currentPosition + 1 >= Math.min(sessionQueue.length, MAX_SESSION_LENGTH)) {
+        sessionProgress = 1;
+    }
+    renderProgress();
+
     document.querySelectorAll("[data-answer-feedback]").forEach(symbol => {
         symbol.hidden = symbol.dataset.answerFeedback !== result;
     });
@@ -527,10 +618,22 @@ function startPractice() {
     showCurrentSyllable();
 }
 
+function endPracticeEarly() {
+    if (!sessionActive) return;
+    if (!window.confirm("Möchtest du die Leserunde für heute beenden?")) return;
+
+    sessionActive = false;
+    resetAnswerFeedback();
+    showScreen("start-screen");
+}
+
 
 // ------------------------------------
 // BUTTONS
 // ------------------------------------
+
+document.getElementById("end-practice-button")
+    .addEventListener("click", endPracticeEarly);
 
 document
     .getElementById("start-button")
@@ -613,14 +716,6 @@ document
 
 
 document
-    .getElementById("dont-know-button")
-    .addEventListener(
-        "click",
-        repeatLater
-    );
-
-
-document
     .getElementById("restart-button")
     .addEventListener(
         "click",
@@ -649,3 +744,7 @@ document
 loadWeeks();
 loadPendingRepeats();
 renderWeeks();
+
+alignTextToNotebook();
+window.addEventListener("resize", alignTextToNotebook);
+document.fonts.ready.then(alignTextToNotebook);

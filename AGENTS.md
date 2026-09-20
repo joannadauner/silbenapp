@@ -33,6 +33,9 @@ Diese Web-App unterstützt Kinder beim Lesenlernen mit der Silbenmethode.
 - Smartphone, Tablet und Desktop unterstützen
 
 ## Arbeitsweise
+- Bei Unklarheiten in Tickets oder Anforderungen vor der betroffenen Umsetzung
+  eine Rückfrage stellen. Unabhängige, eindeutig beschriebene Arbeiten können
+  währenddessen fortgesetzt werden.
 - Bestehende Funktionen nicht unbeabsichtigt entfernen.
 - Vor größeren strukturellen Änderungen kurz erklären, warum sie nötig sind.
 - Änderungen direkt im bestehenden Projekt vornehmen.

@@ -51,8 +51,7 @@ Eine erste vollständig nutzbare Version zum Testen des Lernprinzips.
 - drei Bewertungen:
   - Richtig
   - Nochmal
-  - Weiß ich nicht
-- bei „Nochmal“ oder „Weiß ich nicht“:
+  - bei „Nochmal“ oder „Weiß ich nicht“:
   - Silbe später erneut anzeigen
   - nicht direkt wiederholen
   - exakte Schreibweise erhalten
@@ -121,7 +120,7 @@ Falsch oder unsicher gelesene Silben sollen zuverlässig erneut erscheinen.
 
 ### Fortschrittsanzeige
 
-Ruhig und ohne Fehlerzähler: „Aufgabe 12“.
+Grüner Fortschrittsbalken im Stickerstil ohne sichtbaren Aufgabenzähler.
 Am Rundenende erscheint „Für heute geschafft!“.
 
 ### Status
@@ -157,13 +156,13 @@ sich an Eltern. Keine Fehlerzahlen, Warnsymbole oder leeren Bewertungssterne.
 
 ## Feedback nach jeder Silbe (Ticket #3)
 
-Nach „Richtig“ erscheint ein grüner Haken, nach „Nochmal“ oder „Weiß ich nicht“
-ein blauer Wiederholungspfeil als feste SVG-Grafik direkt unter der Silbe.
-Die bewertete Silbe bleibt für 600 Millisekunden sichtbar, danach folgt automatisch
+Nach „Richtig“ erscheint ein grüner Haken, nach „Nochmal“
+eine Lupe als feste SVG-Grafik rechts neben der Silbe, vertikal mittig, eingeblendet.
+Die bewertete Silbe bleibt während des 1,0 Sekunden langen Overlays unverändert sichtbar, danach folgt automatisch
 die nächste Aufgabe. Auch die letzte Antwort erhält Feedback vor der Rundenauszeichnung.
 
 Währenddessen sind alle Antwortbuttons gesperrt; zusätzliche Bewertungen werden
-ignoriert. Der Platz für das Symbol bleibt reserviert, damit die Ansicht nicht springt.
+ignoriert. Das Symbol liegt als Overlay über der Silbe, ohne das Layout zu verschieben.
 Eine Textbeschreibung wird für Screenreader bereitgestellt. Es gibt keine Töne,
 blinkenden Animationen oder negativen Symbole. Wiederholungen werden sofort gespeichert.
 Eine neue Runde entfernt altes Feedback und bricht einen noch laufenden Timer ab.
@@ -178,21 +177,15 @@ Die Aufmerksamkeit des Kindes stärker auf die Silbe lenken.
 
 ## Übungsansicht
 
-Aktuell existieren Textbuttons:
+Umgesetzt in Ticket #4: Zwei große Bewertungsbuttons zeigen ausschließlich
+feste SVG-Symbole, ohne sichtbaren Text:
 
-```text
-Richtig
-Nochmal
-Weiß ich nicht
-```
+- Häkchen: „Richtig“, mit grünem Häkchen als Feedback.
+- Lupe: „Nochmal“, mit blauer Lupe als Feedback.
 
-Diese sollen visuell reduziert werden.
-
-Mögliche Darstellung:
-
-```text
-✓    ↻    ?
-```
+Die zugänglichen Namen „Richtig“ und „Nochmal“ bleiben für Screenreader erhalten.
+„Weiß ich nicht“ entfällt. Die Feedbackdauer von 1,0 Sekunden, die Klicksperre,
+Wiederholungslogik, Speicherung und Rundenauszeichnungen bleiben unverändert.
 
 ## Anforderungen
 
@@ -216,7 +209,6 @@ Der Erwachsene bedient:
 
 - Richtig
 - Nochmal
-- Weiß ich nicht
 
 Später kann zusätzlich ein Selbstlernmodus entstehen.
 
@@ -224,48 +216,24 @@ Später kann zusätzlich ein Selbstlernmodus entstehen.
 
 # Version 0.4 – Wörter
 
-## Ziel
+## Status
 
-Neben einzelnen Silben sollen auch einfache Wörter geübt werden können.
+Zweisilbige Wörter sind umgesetzt und werden mit einzelnen Silben in derselben
+Runde geübt. Es gibt keinen separaten Wortmodus.
 
-## Funktionen
+## Eingabe und Darstellung
 
-Eltern können Wörter ergänzen, zum Beispiel:
+Eltern tragen Wörter in die vorhandenen Wochenfelder ein. Ein Bindestrich markiert
+die Silbengrenze: `O-mi, Mo-mo, O-mo, I-mo, Mi-mi, Mi-mo, Mi-o`.
+Einträge bleiben durch Kommas getrennt. Leerzeichen um den Bindestrich werden entfernt.
+Bei genau zwei nicht leeren Teilen wird der erste dunkelblau und der zweite rot
+angezeigt, ohne sichtbaren Bindestrich und ohne Lücke im Wort.
 
-```text
-Mama
-Oma
-Mimi
-Lama
-Momo
-```
-
-Mögliche Übungsformen:
-
-```text
-Mama
-```
-
-oder später:
-
-```text
-Ma | ma
-```
-
-## Datenstruktur
-
-Silben und Wörter sollen getrennt verwaltet werden.
-
-Beispielsweise:
-
-```text
-Übungsmodus:
-
-Silben
-Wörter
-```
-
-Die bestehende Silbenfunktion darf dadurch nicht unnötig kompliziert werden.
+Neue Aufgaben erscheinen wie bisher zufällig klein oder mit großem Anfangsbuchstaben,
+z. B. `omi` oder `Omi`. Wiederholungen behalten Schreibweise und Silbengrenze exakt.
+Wochenauswahl, Gewichtung, lokale Speicherung, Rundengröße, Feedback und Auszeichnungen
+gelten für Wörter genauso wie für einzelne Silben. Bestehende Einträge ohne
+Bindestrich werden weiterhin einfarbig angezeigt.
 
 ---
 
@@ -578,9 +546,9 @@ Aktuell vorhanden:
 - exakte Schreibweise bei Wiederholung
 - 15 Startaufgaben mit eingemischten offenen Wiederholungen, maximal 20 Aufgaben
 - Wiederholungen möglichst nach 3–5 anderen Aufgaben
-- Fortschrittsanzeige „Aufgabe …“, keine Leben
+- grüner Fortschrittsbalken im Stickerstil, keine Leben
 - offene Wiederholungen lokal über mehrere Runden speichern
-- Richtig / Nochmal / Weiß ich nicht
+- zwei Symbolbuttons: Häkchen (Richtig) und Lupe (Nochmal)
 - Abschlussbildschirm
 - Codex in VS Code eingerichtet
 
@@ -606,3 +574,25 @@ Nächster Entwicklungsschritt:
 ## Version 0.3
 
 Interface der Übungsansicht vereinfachen.
+
+
+## Fortschrittsbalken
+
+Der Balken beginnt leer. Bei „Richtig“ wächst er um den Anteil der Reststrecke,
+der einer noch eingeplanten Aufgabe entspricht. Bei „Nochmal“ bleibt er stehen;
+zusätzliche Wiederholungen werden bei der Größe der folgenden Schritte berücksichtigt.
+Er geht nie zurück. Beim Rundenende wird er immer vollständig gefüllt, auch wenn
+nach 20 Aufgaben noch Wiederholungen offen sind. Der volle Balken erscheint schon
+während des letzten einsekündigen Stickerfeedbacks vor dem Abschlussbildschirm.
+Eine neue Runde setzt ihn zurück. Grün (#40e866), weißer Rand und Schatten passen
+zu den Feedbackstickern. Der Fortschrittswert ist für Screenreader zugänglich.
+
+
+## Bewertungsbuttons und vorzeitiges Beenden
+
+Die beiden Symbolbuttons für „Richtig“ und „Nochmal“ haben einen weißen Stickerrand
+und Schatten. In der Übungsansicht befindet sich oben rechts ein blaues X auf grauem Hintergrund
+mit dem zugänglichen Namen „Runde vorzeitig beenden“.
+Nach einer bestätigten Rückfrage kehrt die App ohne Rundenauszeichnung zur Startseite
+zurück. Ein laufender Feedbacktimer wird abgebrochen; bereits gespeicherte offene
+Wiederholungen bleiben erhalten. Wird die Rückfrage abgebrochen, geht die Runde weiter.

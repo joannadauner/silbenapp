@@ -45,8 +45,14 @@
             <h2>Silben einstellen</h2>
 
             <p>
-                Trage für jede Woche die neu gelernten Silben ein und hake die Wochen an,
+                Trage für jede Woche Silben und Wörter ein und hake die Wochen an,
                 die geübt werden sollen. Die höchste ausgewählte Woche wird häufiger geübt.
+            </p>
+
+            <p>
+                Einträge mit Komma trennen. Zweisilbige Wörter mit Bindestrich eingeben,
+                zum Beispiel O-mi, Mo-mo oder Mi-o. Beim Lesen erscheint die erste Silbe
+                dunkelblau und die zweite rot, ohne Bindestrich.
             </p>
 
             <div id="weeks-container"></div>
@@ -80,33 +86,58 @@
 
             <div class="practice-header">
 
-                <span id="progress">
-                    Aufgabe 1
-                </span>
+                <button id="end-practice-button" class="end-practice-button"
+                    aria-label="Runde vorzeitig beenden" title="Runde vorzeitig beenden">
+                    <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                        <path d="m8 8 16 16M24 8 8 24"
+                            fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+
+                <div id="progress" class="progress-sticker" role="progressbar"
+                    aria-label="Fortschritt der Leserunde" aria-valuemin="0"
+                    aria-valuemax="100" aria-valuenow="0">
+                    <div id="progress-fill" class="progress-fill"></div>
+                </div>
 
             </div>
 
 
             <div class="syllable-panel">
+                <div class="answer-feedback">
+                    <span data-answer-feedback="correct" hidden>
+                        <svg viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+                            <g class="feedback-sticker">
+                                <path d="m18 51 22 23 43-49" fill="none" stroke="#fff"
+                                    stroke-width="23" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="m18 51 22 23 43-49" fill="none" stroke="#40e866"
+                                    stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+                            </g>
+                        </svg>
+                    </span>
+                    <span data-answer-feedback="repeat" hidden>
+                        <svg viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+                            <!-- Gespiegelte Vorlage: Griff nach rechts unten. -->
+                            <g class="feedback-sticker">
+                                <path d="m54 53 17 17" stroke="#fff" stroke-width="24" stroke-linecap="round"/>
+                                <rect x="-8" y="0" width="16" height="30" rx="5"
+                                    transform="translate(65 65) rotate(-45)" fill="#fff" stroke="#fff" stroke-width="13"/>
+                                <circle cx="36" cy="35" r="26" fill="#fff" stroke="#fff" stroke-width="14"/>
+                                <path d="m54 53 17 17" stroke="#40e866" stroke-width="17.2"/>
+                                <path d="m54 53 17 17" stroke="#fff" stroke-width="6"/>
+                                <circle cx="36" cy="35" r="26" fill="#fff" stroke="#40e866" stroke-width="7"/>
+                                <rect x="-8" y="0" width="16" height="30" rx="5"
+                                    transform="translate(65 65) rotate(-45)" fill="#fff" stroke="#40e866" stroke-width="7"/>
+                            </g>
+                        </svg>
+                    </span>
+                    <span id="answer-feedback-text" class="visually-hidden" role="status" aria-live="polite"></span>
+                </div>
                 <div id="syllable-card">
 
                     MA
 
-                </div>
-                <div class="answer-feedback">
-                    <span data-answer-feedback="correct" hidden>
-                        <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
-                            <path d="m12 33 13 13 27-29" fill="none" stroke="#348052"
-                                stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </span>
-                    <span data-answer-feedback="repeat" hidden>
-                        <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
-                            <path d="M49 24a20 20 0 1 0 2 18M49 10v16H33" fill="none"
-                                stroke="#2869b0" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </span>
-                    <span id="answer-feedback-text" class="visually-hidden" role="status" aria-live="polite"></span>
                 </div>
             </div>
 
@@ -116,23 +147,27 @@
                 <button
                     id="correct-button"
                     class="correct-button"
+                    aria-label="Richtig"
                 >
-                    ✓ Richtig
+                    <svg class="button-icon" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+                        <path d="m12 33 13 13 27-29" fill="none" stroke="currentColor"
+                            stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
                 </button>
 
                 <button
                     id="again-button"
                     class="again-button"
+                    aria-label="Nochmal"
                 >
-                    ↻ Nochmal
+                    <svg class="button-icon" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+                        <circle cx="27" cy="27" r="17" fill="none" stroke="currentColor" stroke-width="6"/>
+                        <path d="m40 40 14 14" fill="none" stroke="currentColor"
+                            stroke-width="6" stroke-linecap="round"/>
+                    </svg>
                 </button>
 
-                <button
-                    id="dont-know-button"
-                    class="dont-know-button"
-                >
-                    ? Weiß ich nicht
-                </button>
+
 
             </div>
 
