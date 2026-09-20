@@ -339,6 +339,34 @@ button {
     height: auto;
 }
 
+.parent-overview {
+    margin: 32px auto 16px;
+    max-width: 560px;
+    text-align: left;
+}
+
+.parent-overview summary {
+    cursor: pointer;
+    padding: 8px 0;
+    font-weight: 600;
+}
+
+.parent-overview summary:focus-visible {
+    outline: 3px solid var(--dark-blue);
+    outline-offset: 4px;
+}
+
+#parent-repeat-list {
+    padding-left: 24px;
+    overflow-wrap: anywhere;
+}
+
+#parent-repeat-list p {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+}
+
 
 /* Textgrundlinien folgen dem Heftpapier, auch bei mehrzeiligen Absätzen. */
 .screen h1,
@@ -347,6 +375,7 @@ button {
 }
 
 .screen p,
+.screen summary,
 .week-selection > span,
 .week input[type="text"] {
     line-height: var(--notebook-line-spacing);
@@ -359,6 +388,7 @@ button {
 .screen h1,
 .screen h2,
 .screen p,
+.screen summary,
 #syllable-card,
 .week-selection > span,
 .week input[type="text"] {

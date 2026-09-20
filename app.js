@@ -2,8 +2,8 @@
 // GRUNDEINSTELLUNGEN
 // ------------------------------------
 
-const SESSION_LENGTH = 15;
-const MAX_SESSION_LENGTH = 20;
+const SESSION_LENGTH = 10;
+const MAX_SESSION_LENGTH = 15;
 const MAX_CARRIED_REPEATS = 5;
 const ANSWER_FEEDBACK_MS = 1000;
 
@@ -433,7 +433,7 @@ function createSession() {
     }
 
     carriedRepeats.forEach((syllable, index) => {
-        sessionQueue.splice(1 + index * 3, 0, { syllable, isRepeat: true });
+        sessionQueue.splice(1 + index * 2, 0, { syllable, isRepeat: true });
     });
 
     currentPosition = 0;
@@ -458,6 +458,20 @@ function showCurrentSyllable() {
         sessionQueue[currentPosition].syllable;
 
     const card = document.getElementById("syllable-card");
+    renderReadingText(card, syllable);
+
+    // Ein leeres Inline-Element markiert die tatsächliche Schriftgrundlinie.
+    const baseline = document.createElement("span");
+    baseline.className = "baseline-marker";
+    baseline.setAttribute("aria-hidden", "true");
+    card.appendChild(baseline);
+
+    renderProgress();
+
+    alignTextToNotebook();
+}
+
+function renderReadingText(card, syllable) {
     const parts = syllable.split("-");
     const isWord = parts.length === 2 && parts.every(part => part.length > 0);
 
@@ -475,15 +489,6 @@ function showCurrentSyllable() {
     }
     card.setAttribute("aria-label", isWord ? parts.join("") : syllable);
 
-    // Ein leeres Inline-Element markiert die tatsächliche Schriftgrundlinie.
-    const baseline = document.createElement("span");
-    baseline.className = "baseline-marker";
-    baseline.setAttribute("aria-hidden", "true");
-    card.appendChild(baseline);
-
-    renderProgress();
-
-    alignTextToNotebook();
 }
 
 function alignTextToNotebook() {
@@ -492,13 +497,14 @@ function alignTextToNotebook() {
     const lineCenter = spacing - 0.5;
     const targets = document.querySelectorAll(
         '.screen.active h1, .screen.active h2, .screen.active p, ' +
-        '.screen.active #syllable-card, ' +
+        '.screen.active #syllable-card, .screen.active summary, ' +
         '.screen.active .week-selection > span, .screen.active .week input[type="text"]'
     );
 
     // Transformationen ändern den Textfluss nicht. Erst alle alten Versätze löschen.
     targets.forEach(target => target.style.setProperty("--line-offset", "0px"));
     targets.forEach(target => {
+        if (target.getClientRects().length === 0) return;
         let baselineY;
         if (target.matches('input')) {
             // Eingabefelder erlauben keine Kindelemente: gleiche Schrift separat messen.
@@ -646,6 +652,7 @@ function repeatLater() {
 // ------------------------------------
 
 function showSessionFeedback() {
+    renderParentOverview();
     // Nur Antworten dieser Runde zählen, nicht der gespeicherte Vorrat.
     const award = !hadUncertainAnswer ? "trophy"
         : sessionUnresolved.size === 0 ? "star" : "check";
@@ -659,6 +666,22 @@ function showSessionFeedback() {
         symbol.hidden = symbol.dataset.award !== award;
     });
     document.getElementById("finish-message").textContent = messages[award];
+}
+
+function renderParentOverview() {
+    document.getElementById("parent-overview").open = false;
+    const list = document.getElementById("parent-repeat-list");
+    list.replaceChildren();
+    for (const syllable of pendingRepeats) {
+        const item = document.createElement("li");
+        const text = document.createElement("p");
+        renderReadingText(text, syllable);
+        item.appendChild(text);
+        list.appendChild(item);
+    }
+    document.getElementById("parent-repeat-description").textContent = pendingRepeats.size
+        ? "Noch offene Silben und Wörter, auch aus früheren Runden. Einträge aus abgewählten Wochen warten, bis diese wieder ausgewählt sind."
+        : "Es sind keine Wiederholungen mehr offen.";
 }
 
 function continueSession() {
@@ -718,6 +741,8 @@ function endPracticeEarly() {
 // ------------------------------------
 // BUTTONS
 // ------------------------------------
+
+document.getElementById("parent-overview").addEventListener("toggle", alignTextToNotebook);
 
 document.getElementById("export-weeks-button").addEventListener("click", exportWeeks);
 document.getElementById("import-weeks-button").addEventListener("click", () => {

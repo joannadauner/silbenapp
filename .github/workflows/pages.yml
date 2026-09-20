@@ -25,7 +25,7 @@ jobs:
           cp index.html style.css app.js manifest.webmanifest sw.js _site/
           cp -R icons _site/icons
           # Neue Dateistände erhalten automatisch einen eigenen Offline-Cache.
-          sed -i "s/\${CACHE_PREFIX}v1/\${CACHE_PREFIX}${GITHUB_SHA}/" _site/sw.js
+          sed -i "s/\${CACHE_PREFIX}v[0-9][0-9]*/\${CACHE_PREFIX}${GITHUB_SHA}/" _site/sw.js
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site

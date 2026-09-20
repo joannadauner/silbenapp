@@ -615,7 +615,7 @@ Wie bisher werden Aufträge für entfernte Einträge beim nächsten gültigen Ru
 bereinigt. Der Dateitransfer benötigt keinen Server und keine zusätzlichen Bibliotheken.
 
 
-## PWA – lokal vorbereitet
+## PWA – veröffentlicht und auf dem iPad getestet
 
 `manifest.webmanifest`, PNG-App-Symbole und `sw.js` ergänzen Installation und
 Offline-Betrieb. Das Manifest verwendet relative Pfade für Hosting in einem
@@ -633,8 +633,8 @@ einmal neu laden und danach offline testen. Zum Weiterentwickeln die Registrieru
 in den Browser-Entwicklerwerkzeugen entfernen und den App-Cache löschen.
 Die HTTP-Adresse im WLAN unterstützt den Service Worker auf dem iPhone nicht.
 
-Nächste Schritte: HTTPS-Veröffentlichung, danach Installation und Flugmodus-Test
-auf iPhone/iPad. Bestehende Wochen vor dem Wechsel zur neuen Adresse als JSON
+HTTPS-Veröffentlichung sowie Installation und Offline-Betrieb auf dem iPad sind
+bestätigt. Bestehende Wochen vor dem Wechsel zur neuen Adresse als JSON
 exportieren und dort importieren, da Browserspeicher an die Adresse gebunden ist.
 
 
@@ -649,3 +649,22 @@ schließen und neu öffnen; gegebenenfalls ein zweites Mal nach dem Download des
 Für iPhone/iPad: Adresse in Safari öffnen, vollständig laden, zum Home-Bildschirm
 hinzufügen und von dort starten. Nach erfolgreichem Online-Start im Flugmodus testen.
 Vorhandene Wochen über JSON von der lokalen Entwicklungsadresse übertragen.
+
+Vom Nutzer am 20.09.2026 bestätigt:
+- Installation auf dem MacBook über Safari („Zum Dock hinzufügen“) funktioniert.
+- Installation auf dem iPad funktioniert.
+- Offline-Test auf dem iPad im Flugmodus mit ausgeschaltetem WLAN funktioniert.
+
+
+## Kürzere Runden und Elternübersicht (umgesetzt)
+
+Nach dem Praxistest beginnen Runden mit 10 Aufgaben einschließlich bis zu fünf
+übernommenen Wiederholungen. Maximal 15 Aufgaben werden angezeigt; danach noch
+offene Wiederholungen bleiben gespeichert. Fortschritt und Auszeichnungen
+verwenden weiterhin die vorhandene Logik mit der neuen Obergrenze.
+
+Auf dem Abschlussbildschirm lässt sich „Für Eltern“ öffnen. Unter „Das üben wir
+weiter“ stehen alle offenen Silben und Wörter, einschließlich früherer Runden
+und abgewählter Wochen. Schreibweise und Silbenfarben bleiben erhalten. Ohne
+offene Einträge erscheint ein entsprechender Hinweis. Die Übersicht beginnt
+nach jeder Runde zugeklappt und enthält keine Fehlerquote oder Zusatzbewertung.
