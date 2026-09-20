@@ -1,6 +1,6 @@
 // Bei Änderungen an App-Dateien diese Version erhöhen.
 const CACHE_PREFIX = `silbenapp:${self.registration.scope}:`;
-const CACHE_NAME = `${CACHE_PREFIX}v5`;
+const CACHE_NAME = `${CACHE_PREFIX}v6`;
 const APP_FILES = [
     './index.html', './style.css', './app.js', './manifest.webmanifest',
     './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'
@@ -33,4 +33,11 @@ self.addEventListener('fetch', event => {
         const cached = await cache.match(isAppPage ? appURL : request);
         return cached || fetch(request);
     }));
+});
+
+// Nur nach ausdrücklichem Antippen des Update-Buttons aktivieren.
+self.addEventListener('message', event => {
+    if (event.data?.type === 'ACTIVATE_UPDATE') {
+        event.waitUntil(self.skipWaiting());
+    }
 });

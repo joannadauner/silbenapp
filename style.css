@@ -485,3 +485,11 @@ button {
         font-size: clamp(48px, 24svh, 90px);
     }
 }
+
+.app-version {
+    font-size: 14px;
+}
+
+#app-update {
+    margin-top: 24px;
+}

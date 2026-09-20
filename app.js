@@ -910,12 +910,82 @@ document.addEventListener("visibilitychange", () => {
 });
 document.fonts.ready.then(refreshViewportLayout);
 
+// Versionsstand gehört zur geladenen Seite, nicht zum möglicherweise neueren Worker.
+const versionLabel = document.querySelector(".app-version span");
+if (versionLabel.textContent === "__APP_VERSION__") {
+    versionLabel.textContent = "Lokal (Entwicklung)";
+}
+
+let updateRegistration = null;
+let updateRequested = false;
+let updateTimeout = null;
+const updatePanel = document.getElementById("app-update");
+const updateButton = document.getElementById("app-update-button");
+const updateStatus = document.getElementById("app-update-status");
+
+function showAvailableUpdate() {
+    updatePanel.hidden = !updateRegistration?.waiting;
+    if (!updatePanel.hidden && !updateRequested) {
+        updateStatus.textContent = "Update verfügbar";
+    }
+    scheduleLayoutUpdate();
+}
+
+updateButton.addEventListener("click", () => {
+    if (sessionActive || updateRequested ||
+        !document.getElementById("start-screen").classList.contains("active")) return;
+    const worker = updateRegistration?.waiting;
+    if (!worker) {
+        showAvailableUpdate();
+        return;
+    }
+    updateRequested = true;
+    updateButton.disabled = true;
+    document.getElementById("start-button").disabled = true;
+    document.getElementById("settings-button").disabled = true;
+    updateStatus.textContent = "Wird aktualisiert …";
+    updateTimeout = setTimeout(() => {
+        updateRequested = false;
+        updateButton.disabled = false;
+        document.getElementById("start-button").disabled = false;
+        document.getElementById("settings-button").disabled = false;
+        updateStatus.textContent = "Update noch nicht abgeschlossen. Bitte erneut versuchen.";
+    }, 10000);
+    worker.postMessage({ type: "ACTIVATE_UPDATE" });
+});
+
 // Auf Live Server bleibt die Entwicklung ohne Cache; lokal ist ?pwa-test=1 möglich.
 if ("serviceWorker" in navigator && window.isSecureContext &&
     (location.protocol === "https:" || new URLSearchParams(location.search).has("pwa-test"))) {
-    window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./sw.js").catch(error => {
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+        // Andere offene App-Fenster dürfen keine laufende Runde neu laden.
+        if (!updateRequested) return;
+        clearTimeout(updateTimeout);
+        location.reload();
+    });
+    window.addEventListener("load", async () => {
+        try {
+            updateRegistration = await navigator.serviceWorker.register("./sw.js", {
+                updateViaCache: "none"
+            });
+            showAvailableUpdate();
+            updateRegistration.addEventListener("updatefound", () => {
+                const worker = updateRegistration.installing;
+                worker?.addEventListener("statechange", () => {
+                    if (worker.state === "installed") showAvailableUpdate();
+                });
+            });
+            const checkForUpdate = () => {
+                if (!document.hidden) {
+                    updateRegistration.update().catch(() => {});
+                    showAvailableUpdate();
+                }
+            };
+            window.addEventListener("online", checkForUpdate);
+            document.addEventListener("visibilitychange", checkForUpdate);
+            checkForUpdate();
+        } catch (error) {
             console.warn("Offline-Speicherung konnte nicht eingerichtet werden:", error);
-        });
+        }
     });
 }

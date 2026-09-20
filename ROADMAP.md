@@ -691,3 +691,15 @@ bewerteten Silben und Wörter auf, auch wenn sie später richtig gelesen wurden.
 Jede exakte Schreibweise erscheint einmal, Wörter behalten ihre Silbenfarben.
 Die Liste wird für jede neue Runde zurückgesetzt und nicht dauerhaft gespeichert.
 Die separate Liste der noch offenen Wiederholungen bleibt unverändert.
+
+
+## Update-Anzeige
+
+Ein fertig heruntergeladenes Update erscheint auf der Startseite mit „Jetzt
+aktualisieren“. Nur nach Antippen wird der wartende Service Worker aktiviert
+und dieses Fenster neu geladen. Andere Fenster und laufende Runden werden nicht
+automatisch neu geladen. Bei Rückkehr zur App und wiederhergestellter Verbindung
+wird nach Updates gesucht. Die Einstellungen zeigen die kurze Commit-ID des
+geladenen Stands, lokal „Lokal (Entwicklung)“. Gespeicherte Lerndaten bleiben erhalten.
+Die erste Version mit dieser Funktion muss noch über den bisherigen Updateweg
+installiert werden. Der vollständige Updateablauf muss auf dem iPad geprüft werden.
