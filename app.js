@@ -96,6 +96,93 @@ function saveWeeks() {
 }
 
 
+// Wochenexport und -import ohne persönlichen Wiederholungsstand.
+function setTransferStatus(message) {
+    document.getElementById("transfer-status").textContent = message;
+    alignTextToNotebook();
+}
+
+function exportWeeks() {
+    readWeeksFromForm();
+    const backup = { format: "silbenapp-wochen", version: 1, weeks, selectedWeeks };
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "silbenapp-wochen.json";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    // Browsern Zeit lassen, den Download zu übernehmen.
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+    setTransferStatus("Export bereitgestellt: silbenapp-wochen.json");
+}
+
+function parseWeeksBackup(text) {
+    const backup = JSON.parse(text.replace(/^\uFEFF/, ""));
+    if (!backup || backup.format !== "silbenapp-wochen" || backup.version !== 1 ||
+        !Array.isArray(backup.weeks) || backup.weeks.length === 0 ||
+        !backup.weeks.every(week => Array.isArray(week) && week.every(value =>
+            typeof value === "string" && value.trim().length > 0 && !value.includes(",")
+        )) || !Array.isArray(backup.selectedWeeks) ||
+        !backup.selectedWeeks.every(index => Number.isInteger(index) &&
+            index >= 0 && index < backup.weeks.length)) {
+        throw new Error("Ungültiges Wochenformat");
+    }
+    return {
+        weeks: backup.weeks.map(week => week.map(value =>
+            value.trim().replace(/\s*-\s*/g, "-").toLowerCase()
+        )),
+        selectedWeeks: [...new Set(backup.selectedWeeks)].sort((a, b) => a - b)
+    };
+}
+
+async function importWeeks(event) {
+    const input = event.target;
+    const file = input.files[0];
+    if (!file) return;
+
+    const button = document.getElementById("import-weeks-button");
+    button.disabled = true;
+    try {
+        let backup;
+        try {
+            backup = parseWeeksBackup(await file.text());
+        } catch {
+            setTransferStatus("Import nicht möglich. Bitte eine gültige Silben-App-Wochendatei der Version 1 auswählen.");
+            return;
+        }
+        if (!window.confirm("Alle vorhandenen Wochen und ihre Auswahl durch die Datei ersetzen? Auch ungespeicherte Eingaben werden ersetzt.")) {
+            setTransferStatus("Import abgebrochen. Deine Wochen bleiben unverändert.");
+            return;
+        }
+
+        const keys = ["readingWeeks", "readingSelectedWeeks"];
+        const oldValues = keys.map(key => localStorage.getItem(key));
+        try {
+            localStorage.setItem(keys[0], JSON.stringify(backup.weeks));
+            localStorage.setItem(keys[1], JSON.stringify(backup.selectedWeeks));
+        } catch {
+            // Bei einem Speicherfehler keine halbfertige Auswahl hinterlassen.
+            keys.forEach((key, index) => {
+                if (localStorage.getItem(key) === oldValues[index]) return;
+                if (oldValues[index] === null) localStorage.removeItem(key);
+                else localStorage.setItem(key, oldValues[index]);
+            });
+            throw new Error("Speichern fehlgeschlagen");
+        }
+        weeks = backup.weeks;
+        selectedWeeks = backup.selectedWeeks;
+        renderWeeks();
+        setTransferStatus("Wochen und Auswahl wurden importiert und gespeichert.");
+    } catch {
+        setTransferStatus("Import konnte nicht gespeichert werden. Bitte den Browserspeicher prüfen.");
+    } finally {
+        input.value = "";
+        button.disabled = false;
+    }
+}
+
 // Offene Aufträge bleiben bis zu einer richtigen Antwort lokal gespeichert.
 function loadPendingRepeats() {
     try {
@@ -632,6 +719,12 @@ function endPracticeEarly() {
 // BUTTONS
 // ------------------------------------
 
+document.getElementById("export-weeks-button").addEventListener("click", exportWeeks);
+document.getElementById("import-weeks-button").addEventListener("click", () => {
+    document.getElementById("import-weeks-file").click();
+});
+document.getElementById("import-weeks-file").addEventListener("change", importWeeks);
+
 document.getElementById("end-practice-button")
     .addEventListener("click", endPracticeEarly);
 
@@ -748,3 +841,13 @@ renderWeeks();
 alignTextToNotebook();
 window.addEventListener("resize", alignTextToNotebook);
 document.fonts.ready.then(alignTextToNotebook);
+
+// Auf Live Server bleibt die Entwicklung ohne Cache; lokal ist ?pwa-test=1 möglich.
+if ("serviceWorker" in navigator && window.isSecureContext &&
+    (location.protocol === "https:" || new URLSearchParams(location.search).has("pwa-test"))) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch(error => {
+            console.warn("Offline-Speicherung konnte nicht eingerichtet werden:", error);
+        });
+    });
+}

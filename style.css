@@ -387,3 +387,59 @@ button {
     border-radius: inherit;
     background: #40e866;
 }
+
+/* Auf flachen Querformat-Bildschirmen bleibt die Bewertung im sichtbaren Bereich. */
+@media (orientation: landscape) and (max-height: 500px) {
+    .app {
+        min-height: 100svh;
+        min-height: 100dvh;
+        padding: 8px max(20px, env(safe-area-inset-right))
+            8px max(20px, env(safe-area-inset-left));
+    }
+
+    .practice-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 0;
+    }
+
+    .practice-header .progress-sticker {
+        order: -1;
+        flex: 1;
+    }
+
+    .end-practice-button {
+        width: 44px;
+        height: 44px;
+        margin: 0;
+        flex-shrink: 0;
+    }
+
+    .syllable-panel {
+        margin: 16px auto;
+    }
+
+    #syllable-card,
+    #syllable-card.two-syllable-word {
+        font-size: clamp(48px, 24svh, 90px);
+        line-height: 1.05;
+    }
+
+    .answer-buttons {
+        flex-direction: row;
+        justify-content: center;
+        gap: 16px;
+    }
+
+    .answer-buttons button {
+        width: min(42%, 220px);
+        min-height: 60px;
+        margin: 0;
+        padding: 6px 20px;
+    }
+
+    .answer-feedback > [data-answer-feedback] {
+        max-width: 96px;
+    }
+}

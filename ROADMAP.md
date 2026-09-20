@@ -596,3 +596,56 @@ mit dem zugänglichen Namen „Runde vorzeitig beenden“.
 Nach einer bestätigten Rückfrage kehrt die App ohne Rundenauszeichnung zur Startseite
 zurück. Ein laufender Feedbacktimer wird abgebrochen; bereits gespeicherte offene
 Wiederholungen bleiben erhalten. Wird die Rückfrage abgebrochen, geht die Runde weiter.
+
+
+## Wochenexport und -import (umgesetzt)
+
+Unter „Silben einstellen“ stehen Export und Import zur Verfügung. Die Datei
+`silbenapp-wochen.json` enthält `format: "silbenapp-wochen"`, `version: 1`,
+`weeks` (Liste von Wochen mit Texteingaben) und `selectedWeeks` (ausgewählte
+Wochen als nullbasierte Indizes). Bindestriche zur Silbentrennung bleiben erhalten.
+Der Export berücksichtigt die aktuellen Formulareingaben, auch vor dem Speichern.
+
+Vor dem Import werden Dateiformat, Version, Wochen und Auswahl geprüft. Erst nach
+Bestätigung ersetzt die Datei alle bisherigen Wochen samt Auswahl und wird lokal
+gespeichert. Abbrechen oder ungültige Dateien verändern die Wochen nicht.
+Leere Wochen und eine leere Auswahl sind erlaubt. Offene Wiederholungen werden
+weder exportiert noch importiert; die vorhandenen Aufträge bleiben auf dem Gerät.
+Wie bisher werden Aufträge für entfernte Einträge beim nächsten gültigen Rundenstart
+bereinigt. Der Dateitransfer benötigt keinen Server und keine zusätzlichen Bibliotheken.
+
+
+## PWA – lokal vorbereitet
+
+`manifest.webmanifest`, PNG-App-Symbole und `sw.js` ergänzen Installation und
+Offline-Betrieb. Das Manifest verwendet relative Pfade für Hosting in einem
+Unterordner, beispielsweise GitHub Pages. Wochen und Wiederholungen bleiben lokal;
+es werden ausschließlich die statischen App-Dateien zwischengespeichert.
+
+Auf HTTPS registriert sich der Service Worker automatisch. Erst nach erfolgreicher
+Installation sind alle App-Dateien offline vorhanden. Eine neue Version wartet,
+bis die bisherigen App-Fenster geschlossen sind. Bei Änderungen an gecachten Dateien
+muss die Cache-Version in `sw.js` erhöht werden. Andere App-Caches bleiben erhalten.
+
+Live Server registriert standardmäßig keinen Service Worker. Zum lokalen Test
+`http://localhost:5500/index.html?pwa-test=1` verwenden, Installation im Browser prüfen,
+einmal neu laden und danach offline testen. Zum Weiterentwickeln die Registrierung
+in den Browser-Entwicklerwerkzeugen entfernen und den App-Cache löschen.
+Die HTTP-Adresse im WLAN unterstützt den Service Worker auf dem iPhone nicht.
+
+Nächste Schritte: HTTPS-Veröffentlichung, danach Installation und Flugmodus-Test
+auf iPhone/iPad. Bestehende Wochen vor dem Wechsel zur neuen Adresse als JSON
+exportieren und dort importieren, da Browserspeicher an die Adresse gebunden ist.
+
+
+## Veröffentlichung über GitHub Pages
+
+Der Workflow `.github/workflows/pages.yml` veröffentlicht nach einem Push auf `main`
+nur HTML, CSS, JavaScript, Manifest und Icons. Die öffentliche Adresse ist
+`https://joannadauner.github.io/silbenapp/`. Der Offline-Cache erhält beim Deployment
+automatisch die Commit-ID als Version. Nach einem Update alle alten App-Fenster
+schließen und neu öffnen; gegebenenfalls ein zweites Mal nach dem Download des Updates.
+
+Für iPhone/iPad: Adresse in Safari öffnen, vollständig laden, zum Home-Bildschirm
+hinzufügen und von dort starten. Nach erfolgreichem Online-Start im Flugmodus testen.
+Vorhandene Wochen über JSON von der lokalen Entwicklungsadresse übertragen.
