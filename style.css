@@ -501,14 +501,22 @@ button {
 }
 
 #finish-screen.active [data-award="star"]:not([hidden]) .star-sticker {
-    transform-origin: 50% 55%;
-    animation: star-wiggle 250ms ease-in-out 5;
+    transform-origin: 50% 100%;
+    animation: star-hop 600ms linear 3;
 }
 
-@keyframes star-wiggle {
-    0%, 100% { transform: rotate(0deg); }
-    25% { transform: rotate(-10deg); }
-    75% { transform: rotate(10deg); }
+@keyframes star-hop {
+    0%, 100% { transform: translateY(0) scale(1); }
+    12% {
+        transform: translateY(0) scale(1.06, 0.92);
+        animation-timing-function: cubic-bezier(0.16, 0.7, 0.3, 1);
+    }
+    45% {
+        transform: translateY(-36px) scale(0.97, 1.04);
+        animation-timing-function: cubic-bezier(0.55, 0, 0.85, 0.4);
+    }
+    78% { transform: translateY(0) scale(1.08, 0.9); }
+    90% { transform: translateY(-4px) scale(0.99, 1.02); }
 }
 
 @media (prefers-reduced-motion: reduce) {

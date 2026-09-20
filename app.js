@@ -661,7 +661,7 @@ function showSessionFeedback() {
         : sessionUnresolved.size === 0 ? "star" : "check";
     const messages = {
         trophy: "Leserunde super geschafft!",
-        star: "Leserunde mit Übung geschafft!",
+        star: "Leserunde mit etwas Übung geschafft!",
         check: "Leserunde geschafft! Bleib dran!"
     };
 
