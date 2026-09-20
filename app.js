@@ -863,9 +863,25 @@ loadWeeks();
 loadPendingRepeats();
 renderWeeks();
 
-alignTextToNotebook();
-window.addEventListener("resize", alignTextToNotebook);
-document.fonts.ready.then(alignTextToNotebook);
+// Nach Größenänderungen erst mit den aktuellen Layoutmaßen ausrichten.
+let layoutFrame = null;
+function scheduleLayoutUpdate() {
+    if (layoutFrame !== null) cancelAnimationFrame(layoutFrame);
+    layoutFrame = requestAnimationFrame(() => {
+        layoutFrame = null;
+        alignTextToNotebook();
+    });
+}
+
+scheduleLayoutUpdate();
+window.addEventListener("resize", scheduleLayoutUpdate);
+window.addEventListener("pageshow", scheduleLayoutUpdate);
+window.visualViewport?.addEventListener("resize", scheduleLayoutUpdate);
+window.screen.orientation?.addEventListener("change", scheduleLayoutUpdate);
+document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) scheduleLayoutUpdate();
+});
+document.fonts.ready.then(scheduleLayoutUpdate);
 
 // Auf Live Server bleibt die Entwicklung ohne Cache; lokal ist ?pwa-test=1 möglich.
 if ("serviceWorker" in navigator && window.isSecureContext &&

@@ -668,3 +668,13 @@ weiter“ stehen alle offenen Silben und Wörter, einschließlich früherer Rund
 und abgewählter Wochen. Schreibweise und Silbenfarben bleiben erhalten. Ohne
 offene Einträge erscheint ein entsprechender Hinweis. Die Übersicht beginnt
 nach jeder Runde zugeklappt und enthält keine Fehlerquote oder Zusatzbewertung.
+
+
+## Anpassung an Bildschirm und Ausrichtung
+
+Die App nutzt die dynamische sichtbare Fensterhöhe bereits beim Start und
+berücksichtigt sichere Bildschirmränder. Im Querformat stehen die Bewertungsbuttons
+auch auf Tablets nebeneinander. Schmale Bildschirme berücksichtigen die Buttonränder.
+Nach Fenstergrößenänderung, Drehung und Wiederöffnen wird die Heftlinienausrichtung
+im nächsten Animationsframe aktualisiert. Längere Einstellungen und Elternlisten
+bleiben scrollbar. Prüfung auf echten Geräten steht noch aus.

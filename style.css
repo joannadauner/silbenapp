@@ -45,8 +45,14 @@ body {
     margin: 0 auto;
 
     min-height: 100vh;
+    min-height: 100svh;
+    min-height: 100dvh;
 
     padding: 30px 20px;
+    padding: max(30px, env(safe-area-inset-top))
+        max(20px, env(safe-area-inset-right))
+        max(30px, env(safe-area-inset-bottom))
+        max(20px, env(safe-area-inset-left));
 
     display: flex;
     align-items: center;
@@ -96,7 +102,7 @@ button {
 
     cursor: pointer;
 
-    width: 100%;
+    width: calc(100% - 14px);
     max-width: 320px;
 
     margin: 7px;
@@ -418,15 +424,8 @@ button {
     background: #40e866;
 }
 
-/* Auf flachen Querformat-Bildschirmen bleibt die Bewertung im sichtbaren Bereich. */
-@media (orientation: landscape) and (max-height: 500px) {
-    .app {
-        min-height: 100svh;
-        min-height: 100dvh;
-        padding: 8px max(20px, env(safe-area-inset-right))
-            8px max(20px, env(safe-area-inset-left));
-    }
-
+/* Querformat gilt auch beim direkten Start auf Tablets. */
+@media (orientation: landscape) {
     .practice-header {
         display: flex;
         align-items: center;
@@ -452,7 +451,7 @@ button {
 
     #syllable-card,
     #syllable-card.two-syllable-word {
-        font-size: clamp(48px, 24svh, 90px);
+        font-size: clamp(48px, 24svh, 140px);
         line-height: 1.05;
     }
 
@@ -471,5 +470,18 @@ button {
 
     .answer-feedback > [data-answer-feedback] {
         max-width: 96px;
+    }
+}
+
+/* Flache Smartphone-Fenster brauchen kleinere Außenabstände. */
+@media (max-height: 500px) {
+    .app {
+        padding-top: max(8px, env(safe-area-inset-top));
+        padding-bottom: max(8px, env(safe-area-inset-bottom));
+    }
+
+    #syllable-card,
+    #syllable-card.two-syllable-word {
+        font-size: clamp(48px, 24svh, 90px);
     }
 }
