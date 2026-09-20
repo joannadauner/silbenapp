@@ -112,13 +112,42 @@ button {
 
     font-weight: 700;
 
-    margin: 40px 0 70px;
+    margin: 40px 0 0;
 
     letter-spacing: 3px;
 }
 
 
 /* ANTWORTBUTTONS */
+
+.answer-feedback {
+    height: 70px;
+    margin-bottom: 16px;
+}
+
+.answer-feedback svg {
+    display: block;
+    width: 64px;
+    height: 64px;
+    margin: 0 auto;
+}
+
+.answer-buttons button:disabled {
+    cursor: default;
+    opacity: 0.65;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+}
 
 .answer-buttons {
     display: flex;

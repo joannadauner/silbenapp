@@ -87,10 +87,27 @@
             </div>
 
 
-            <div id="syllable-card">
+            <div class="syllable-panel">
+                <div id="syllable-card">
 
-                MA
+                    MA
 
+                </div>
+                <div class="answer-feedback">
+                    <span data-answer-feedback="correct" hidden>
+                        <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+                            <path d="m12 33 13 13 27-29" fill="none" stroke="#348052"
+                                stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+                    <span data-answer-feedback="repeat" hidden>
+                        <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+                            <path d="M49 24a20 20 0 1 0 2 18M49 10v16H33" fill="none"
+                                stroke="#2869b0" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+                    <span id="answer-feedback-text" class="visually-hidden" role="status" aria-live="polite"></span>
+                </div>
             </div>
 
 

@@ -5,9 +5,11 @@
 const SESSION_LENGTH = 15;
 const MAX_SESSION_LENGTH = 20;
 const MAX_CARRIED_REPEATS = 5;
+const ANSWER_FEEDBACK_MS = 600;
 
 let pendingRepeats = new Set();
 let sessionActive = false;
+let answerFeedbackTimer = null;
 let hadUncertainAnswer = false;
 let sessionUnresolved = new Set();
 
@@ -344,6 +346,7 @@ function createSession() {
     });
 
     currentPosition = 0;
+    resetAnswerFeedback();
     hadUncertainAnswer = false;
     sessionUnresolved = new Set();
     sessionActive = true;
@@ -377,9 +380,38 @@ function showCurrentSyllable() {
 // RICHTIG
 // ------------------------------------
 
+function resetAnswerFeedback() {
+    clearTimeout(answerFeedbackTimer);
+    answerFeedbackTimer = null;
+    document.querySelectorAll("[data-answer-feedback]").forEach(symbol => {
+        symbol.hidden = true;
+    });
+    document.getElementById("answer-feedback-text").textContent = "";
+    document.querySelectorAll(".answer-buttons button").forEach(button => {
+        button.disabled = false;
+    });
+}
+
+function showAnswerFeedback(result) {
+    document.querySelectorAll("[data-answer-feedback]").forEach(symbol => {
+        symbol.hidden = symbol.dataset.answerFeedback !== result;
+    });
+    document.getElementById("answer-feedback-text").textContent =
+        result === "correct" ? "Richtig!" : "Das üben wir noch einmal.";
+    document.querySelectorAll(".answer-buttons button").forEach(button => {
+        button.disabled = true;
+    });
+
+    answerFeedbackTimer = setTimeout(() => {
+        resetAnswerFeedback();
+        currentPosition++;
+        continueSession();
+    }, ANSWER_FEEDBACK_MS);
+}
+
 function answerCorrect() {
 
-    if (!sessionActive) return;
+    if (!sessionActive || answerFeedbackTimer !== null) return;
 
     const syllable = sessionQueue[currentPosition].syllable;
     sessionUnresolved.delete(syllable);
@@ -387,9 +419,7 @@ function answerCorrect() {
     removeQueuedRepeat(syllable);
     savePendingRepeats();
 
-    currentPosition++;
-
-    continueSession();
+    showAnswerFeedback("correct");
 }
 
 
@@ -399,7 +429,7 @@ function answerCorrect() {
 
 function repeatLater() {
 
-    if (!sessionActive) return;
+    if (!sessionActive || answerFeedbackTimer !== null) return;
 
     const syllable = sessionQueue[currentPosition].syllable;
     hadUncertainAnswer = true;
@@ -429,9 +459,7 @@ function repeatLater() {
         { syllable, isRepeat: true }
     );
 
-    currentPosition++;
-
-    continueSession();
+    showAnswerFeedback("repeat");
 }
 
 

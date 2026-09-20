@@ -155,6 +155,21 @@ sich an Eltern. Keine Fehlerzahlen, Warnsymbole oder leeren Bewertungssterne.
 
 ---
 
+## Feedback nach jeder Silbe (Ticket #3)
+
+Nach „Richtig“ erscheint ein grüner Haken, nach „Nochmal“ oder „Weiß ich nicht“
+ein blauer Wiederholungspfeil als feste SVG-Grafik direkt unter der Silbe.
+Die bewertete Silbe bleibt für 600 Millisekunden sichtbar, danach folgt automatisch
+die nächste Aufgabe. Auch die letzte Antwort erhält Feedback vor der Rundenauszeichnung.
+
+Währenddessen sind alle Antwortbuttons gesperrt; zusätzliche Bewertungen werden
+ignoriert. Der Platz für das Symbol bleibt reserviert, damit die Ansicht nicht springt.
+Eine Textbeschreibung wird für Screenreader bereitgestellt. Es gibt keine Töne,
+blinkenden Animationen oder negativen Symbole. Wiederholungen werden sofort gespeichert.
+Eine neue Runde entfernt altes Feedback und bricht einen noch laufenden Timer ab.
+
+---
+
 # Version 0.3 – Interface vereinfachen
 
 ## Ziel
