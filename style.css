@@ -502,13 +502,13 @@ button {
 
 #finish-screen.active [data-award="star"]:not([hidden]) .star-sticker {
     transform-origin: 50% 55%;
-    animation: star-wiggle 400ms ease-in-out 2;
+    animation: star-wiggle 250ms ease-in-out 5;
 }
 
 @keyframes star-wiggle {
     0%, 100% { transform: rotate(0deg); }
-    25%, 75% { transform: rotate(-10deg); }
-    50% { transform: rotate(10deg); }
+    25% { transform: rotate(-10deg); }
+    75% { transform: rotate(10deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {

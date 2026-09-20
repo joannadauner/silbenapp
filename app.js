@@ -660,9 +660,9 @@ function showSessionFeedback() {
     const award = !hadUncertainAnswer ? "trophy"
         : sessionUnresolved.size === 0 ? "star" : "check";
     const messages = {
-        trophy: "Alles direkt geschafft!",
-        star: "Mit Übung geschafft!",
-        check: "Für heute geschafft!"
+        trophy: "Leserunde super geschafft!",
+        star: "Leserunde mit Übung geschafft!",
+        check: "Leserunde geschafft! Bleib dran!"
     };
 
     document.querySelectorAll("[data-award]").forEach(symbol => {
