@@ -8,6 +8,8 @@ const MAX_CARRIED_REPEATS = 5;
 
 let pendingRepeats = new Set();
 let sessionActive = false;
+let hadUncertainAnswer = false;
+let sessionUnresolved = new Set();
 
 let currentPosition = 0;
 let sessionQueue = [];
@@ -342,6 +344,8 @@ function createSession() {
     });
 
     currentPosition = 0;
+    hadUncertainAnswer = false;
+    sessionUnresolved = new Set();
     sessionActive = true;
 
     return true;
@@ -378,6 +382,7 @@ function answerCorrect() {
     if (!sessionActive) return;
 
     const syllable = sessionQueue[currentPosition].syllable;
+    sessionUnresolved.delete(syllable);
     pendingRepeats.delete(syllable);
     removeQueuedRepeat(syllable);
     savePendingRepeats();
@@ -397,6 +402,8 @@ function repeatLater() {
     if (!sessionActive) return;
 
     const syllable = sessionQueue[currentPosition].syllable;
+    hadUncertainAnswer = true;
+    sessionUnresolved.add(syllable);
 
     // Ein Auftrag je Schreibweise; erneut unsichere Silben hinten anstellen.
     pendingRepeats.delete(syllable);
@@ -432,6 +439,22 @@ function repeatLater() {
 // RUNDE FORTSETZEN
 // ------------------------------------
 
+function showSessionFeedback() {
+    // Nur Antworten dieser Runde zählen, nicht der gespeicherte Vorrat.
+    const award = !hadUncertainAnswer ? "trophy"
+        : sessionUnresolved.size === 0 ? "star" : "check";
+    const messages = {
+        trophy: "Alles direkt geschafft!",
+        star: "Mit Übung geschafft!",
+        check: "Für heute geschafft!"
+    };
+
+    document.querySelectorAll("[data-award]").forEach(symbol => {
+        symbol.hidden = symbol.dataset.award !== award;
+    });
+    document.getElementById("finish-message").textContent = messages[award];
+}
+
 function continueSession() {
 
     if (
@@ -440,6 +463,7 @@ function continueSession() {
     ) {
 
         sessionActive = false;
+        showSessionFeedback();
         showScreen(
             "finish-screen"
         );

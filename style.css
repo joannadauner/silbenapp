@@ -192,7 +192,12 @@ button {
 /* ENDE */
 
 .finish-symbol {
-    font-size: 80px;
+    width: min(220px, 60vw);
+    margin: 24px auto;
+}
 
-    margin: 30px 0;
+.finish-symbol svg {
+    display: block;
+    width: 100%;
+    height: auto;
 }

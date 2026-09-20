@@ -132,6 +132,29 @@ früher als nach drei anderen Aufgaben erscheinen, wenn weniger Aufgaben übrig 
 
 ---
 
+## Visuelles Rundenfeedback (Ticket #2)
+
+Umgesetzt: Der Abschluss zeigt eine feste, große SVG-Grafik. Alle drei Motive
+sind gleich groß, zentral und durch ihre Form ohne Lesen unterscheidbar.
+
+- Goldener Pokal: keine unsichere Antwort in der aktuellen Runde.
+- Silberner Stern mit freundlichem Gesicht: mindestens eine unsichere Antwort,
+  anschließend alle in dieser Runde unsicheren Schreibweisen richtig beantwortet.
+- Grüner Haken im Kreis: bei Aufgabe 20 sind noch Schreibweisen aus dieser Runde offen.
+
+Die letzte Antwort je exakter Schreibweise zählt; `Ma` und `ma` bleiben getrennt.
+Nicht gezeigte gespeicherte Wiederholungen beeinflussen das Ergebnis nicht.
+Direkt richtig gelesene übernommene Wiederholungen verhindern den Pokal nicht.
+Es gibt keine zusätzliche Fehlergrenze für den Silberstern. Die Bewertung wird
+bei jeder Runde zurückgesetzt und nicht dauerhaft gespeichert. Offene
+Wiederholungen bleiben wie bisher in localStorage erhalten.
+
+Die Grafiken haben zugängliche Textbeschreibungen; ergänzende kurze Texte richten
+sich an Eltern. Keine Fehlerzahlen, Warnsymbole oder leeren Bewertungssterne.
+„Noch eine Runde“ und „Zur Startseite“ bleiben verfügbar.
+
+---
+
 # Version 0.3 – Interface vereinfachen
 
 ## Ziel

@@ -125,13 +125,47 @@
         <!-- ENDE -->
         <section id="finish-screen" class="screen">
 
-            <h2>Für heute geschafft!</h2>
+            <h2>Leserunde geschafft!</h2>
 
             <div class="finish-symbol">
-                ★
+                <div data-award="trophy" hidden>
+                    <svg viewBox="0 0 200 200" role="img" aria-labelledby="trophy-title">
+                        <title id="trophy-title">Goldener Pokal – alles direkt geschafft</title>
+                        <path d="M55 43H25v22c0 28 20 40 43 40M145 43h30v22c0 28-20 40-43 40"
+                            fill="none" stroke="#b67c08" stroke-width="12" stroke-linejoin="round"/>
+                        <path d="M54 28h92v43c0 31-19 51-46 51S54 102 54 71Z"
+                            fill="#f4c542" stroke="#b67c08" stroke-width="6"/>
+                        <path d="M68 40v29c0 15 4 24 10 30" fill="none" stroke="#ffe9a0"
+                            stroke-width="9" stroke-linecap="round"/>
+                        <path d="M100 124v28" stroke="#b67c08" stroke-width="14"/>
+                        <path d="M74 151h52l12 25H62Z" fill="#f4c542" stroke="#b67c08" stroke-width="6"/>
+                        <rect x="55" y="175" width="90" height="12" rx="6" fill="#b67c08"/>
+                    </svg>
+                </div>
+                <div data-award="star" hidden>
+                    <svg viewBox="0 0 200 200" role="img" aria-labelledby="star-title">
+                        <title id="star-title">Silberner Stern – mit Übung geschafft</title>
+                        <path d="m100 14 27 55 61 9-44 43 10 62-54-29-54 29 10-62-44-43 61-9Z"
+                            fill="#cdd3dc" stroke="#707b8b" stroke-width="6" stroke-linejoin="round"/>
+                        <path d="m100 32-20 43-39 6" fill="none" stroke="#f4f6fa"
+                            stroke-width="7" stroke-linecap="round"/>
+                        <circle cx="80" cy="99" r="6" fill="#354052"/>
+                        <circle cx="120" cy="99" r="6" fill="#354052"/>
+                        <path d="M80 119q20 23 40 0" fill="none" stroke="#354052"
+                            stroke-width="6" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div data-award="check" hidden>
+                    <svg viewBox="0 0 200 200" role="img" aria-labelledby="check-title">
+                        <title id="check-title">Grüner Haken – für heute geschafft</title>
+                        <circle cx="100" cy="100" r="85" fill="#e4f4e9" stroke="#348052" stroke-width="7"/>
+                        <path d="m57 102 29 29 57-62" fill="none" stroke="#348052"
+                            stroke-width="17" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
             </div>
 
-            <p>
+            <p id="finish-message">
                 Du hast deine Leserunde beendet.
             </p>
 
