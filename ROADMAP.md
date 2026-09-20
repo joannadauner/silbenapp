@@ -722,3 +722,14 @@ Nach Aktivierung übernimmt der Worker die Clients. Der Update-Button wartet auf
 den aktivierten Worker, lädt nur einmal neu und erlaubt nach einer Zeitüberschreitung
 einen erneuten Versuch. Andere Fenster laden weiterhin nicht automatisch neu.
 Logikprüfungen bestanden; erneuter Update-Test auf dem iPad steht aus.
+
+
+## Silbenfarben in Kindertexten
+
+Starttitel, Leseaufforderung, Start-/Nochmal-/„Genug für heute.“-Button und die drei
+Ergebnisüberschriften verwenden fest hinterlegte Silbentrennungen. Jede erste
+Silbe eines Wortes ist blau, danach wechseln Grau (#777) und Blau, ohne Trennstriche.
+Screenreader erhalten zusammenhängenden Text. Auf den blauen primären Buttons
+wechseln Weiß und Hellgrau (#d9d9d9). Lernaufgaben behalten Blau und Rot.
+Einstellungen, Elternübersicht
+und technische Updatehinweise bleiben unverändert.

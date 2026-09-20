@@ -493,6 +493,33 @@ function renderReadingText(card, syllable) {
 
 }
 
+// Fest hinterlegte Silben für die Texte der Kinderansichten.
+function renderChildText(element, markedText) {
+    element.replaceChildren();
+    const spoken = document.createElement("span");
+    spoken.className = "visually-hidden";
+    spoken.textContent = markedText.replaceAll("-", "");
+    element.appendChild(spoken);
+    const visual = document.createElement("span");
+    visual.setAttribute("aria-hidden", "true");
+    markedText.split(/(\s+)/).forEach(token => {
+        if (/^\s+$/.test(token)) {
+            visual.appendChild(document.createTextNode(token));
+            return;
+        }
+        const word = document.createElement("span");
+        word.className = "reading-word";
+        token.split("-").forEach((part, index) => {
+            const syllable = document.createElement("span");
+            syllable.className = index % 2 === 0 ? "first-syllable" : "second-syllable";
+            syllable.textContent = part;
+            word.appendChild(syllable);
+        });
+        visual.appendChild(word);
+    });
+    element.appendChild(visual);
+}
+
 function alignTextToNotebook() {
     const spacing = parseFloat(getComputedStyle(document.body)
         .getPropertyValue("--notebook-line-spacing"));
@@ -660,15 +687,15 @@ function showSessionFeedback() {
     const award = !hadUncertainAnswer ? "trophy"
         : sessionUnresolved.size === 0 ? "star" : "check";
     const messages = {
-        trophy: "Leserunde super geschafft!",
-        star: "Leserunde mit etwas Übung geschafft!",
-        check: "Leserunde geschafft! Bleib dran!"
+        trophy: "Le-se-run-de su-per ge-schafft!",
+        star: "Le-se-run-de mit et-was Ü-bung ge-schafft!",
+        check: "Le-se-run-de ge-schafft! Bleib dran!"
     };
 
     document.querySelectorAll("[data-award]").forEach(symbol => {
         symbol.hidden = symbol.dataset.award !== award;
     });
-    document.getElementById("finish-message").textContent = messages[award];
+    renderChildText(document.getElementById("finish-message"), messages[award]);
 }
 
 function renderParentOverview() {
@@ -869,6 +896,10 @@ document
 // ------------------------------------
 // APP STARTEN
 // ------------------------------------
+
+document.querySelectorAll("[data-reading-text]").forEach(element => {
+    renderChildText(element, element.dataset.readingText);
+});
 
 loadWeeks();
 loadPendingRepeats();
