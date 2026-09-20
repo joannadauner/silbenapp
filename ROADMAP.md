@@ -703,3 +703,12 @@ wird nach Updates gesucht. Die Einstellungen zeigen die kurze Commit-ID des
 geladenen Stands, lokal „Lokal (Entwicklung)“. Gespeicherte Lerndaten bleiben erhalten.
 Die erste Version mit dieser Funktion muss noch über den bisherigen Updateweg
 installiert werden. Der vollständige Updateablauf muss auf dem iPad geprüft werden.
+
+
+## Farbiger Abschlussstern
+
+Die Auszeichnung „Mit Übung geschafft“ zeigt einen Stern in #eeff00 mit
+großen Augen in App-Blau (#1327e3), Akzenten in App-Rot (#ff0000), weißem
+Stickerrand und Schatten. Der Stern ist gegenüber der bisherigen Auszeichnung
+um 25 % größer und bleibt zentriert. Das SVG
+orientiert sich an der bereitgestellten Vorlage. Die Vergabelogik bleibt unverändert.
