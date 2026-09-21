@@ -222,3 +222,16 @@ Keine vorgegebene Silbe wird als Hinweis an das Modell geschickt.
 mit simuliertem Modell. Reales Laden und Audio auf dem iPad sind noch nicht getestet.
 Quellen: https://huggingface.co/docs/transformers.js und
 https://huggingface.co/onnx-community/whisper-tiny (Modell/Lizenz: MIT).
+
+
+### Sprachprototyp: iPad-Abbruch bei Auswertung
+
+Modellladen und Aufnahme funktionieren laut Nutzer auf iPad 9 / iPadOS 26.3.1
+in der installierten App; während der Auswertung erschien ein weißer Bildschirm.
+Die Ursache ist nicht bestätigt. Teststand 2 deaktiviert ONNX-Speicherarena und
+Speichermuster, begrenzt die Ausgabe auf 12 Tokens und gibt Audio-Zwischenpuffer
+früher frei. Dies ist ein Optimierungsversuch, keine bestätigte Absturzbehebung.
+Nur die technische Phase wird lokal unter `speechTestPhase` gespeichert, niemals
+Audio oder erkannter Text. Nach einem unerwarteten Neuladen wird sie angezeigt;
+regulärer Abbruch und erfolgreiche Auswertung löschen sie. Ein Browserabsturz
+kann weiterhin nicht zuverlässig abgefangen werden. Erneuter Gerätetest nötig.

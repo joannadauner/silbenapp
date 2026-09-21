@@ -18,10 +18,13 @@ test('speech worker processes audio locally and blocks fetch after loading', asy
                 assert.equal(task, 'automatic-speech-recognition');
                 assert.equal(options.device, 'wasm');
                 assert.equal(options.dtype, 'q8');
+                assert.equal(options.session_options.enableCpuMemArena, false);
+                assert.equal(options.session_options.enableMemPattern, false);
                 await self.fetch('model-file');
                 return async (audio, settings) => {
                     supplied = audio;
                     assert.equal(settings.language, 'german');
+                    assert.equal(settings.max_new_tokens, 12);
                     return { text: 'Mi' };
                 };
             }

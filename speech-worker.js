@@ -15,6 +15,8 @@ self.onmessage = async ({ data }) => {
             env.backends.onnx.wasm.proxy = false;
             transcriber = await pipeline('automatic-speech-recognition', 'onnx-community/whisper-tiny', {
                 device: 'wasm', dtype: 'q8', revision: 'ff4177021cc41f7db950912b73ea4fdf7d01d8e7',
+                // Reduce retained allocator memory for the iPad experiment.
+                session_options: { enableCpuMemArena: false, enableMemPattern: false },
                 progress_callback: event => {
                     if (event.status === 'progress') self.postMessage({
                         type: 'progress', percent: Math.round(event.progress)
@@ -24,9 +26,10 @@ self.onmessage = async ({ data }) => {
             ready = true;
             self.postMessage({ type: 'ready' });
         } else if (data.type === 'recognize' && ready) {
+            self.postMessage({ type: 'phase', phase: 'Sprachmodell auswerten' });
             const start = performance.now();
             const result = await transcriber(data.audio, {
-                language: 'german', task: 'transcribe', max_new_tokens: 32,
+                language: 'german', task: 'transcribe', max_new_tokens: 12,
                 do_sample: false
             });
             self.postMessage({ type: 'result', text: result.text, seconds: (performance.now() - start) / 1000 });

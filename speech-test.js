@@ -7,6 +7,18 @@ const resultText = document.getElementById('speech-result');
 let worker, stream, recorder, audioContext, recordTimer, watchdog;
 let generation = 0;
 let state = 'idle';
+// Store only a technical phase, never audio or recognized text.
+const diagnosticKey = 'speechTestPhase';
+function phase(value) {
+    try {
+        if (value) localStorage.setItem(diagnosticKey, value);
+        else localStorage.removeItem(diagnosticKey);
+    } catch { /* Diagnostic storage is optional. */ }
+}
+try {
+    const previous = localStorage.getItem(diagnosticKey);
+    if (previous) statusText.textContent = `Voriger Test wurde unterbrochen bei: ${previous}. Ursache noch unbekannt.`;
+} catch { /* Private storage may be unavailable. */ }
 function controls(next) {
     state = next;
     loadButton.disabled = next !== 'idle';
@@ -21,6 +33,7 @@ function releaseMicrophone() {
 }
 function reset(message) {
     generation++;
+    phase(null);
     if (recorder?.state === 'recording') recorder.stop();
     recorder = null;
     releaseMicrophone();
@@ -39,20 +52,27 @@ loadButton.onclick = () => {
         return;
     }
     controls('loading');
+    phase('Modell laden');
     statusText.textContent = 'Modell wird geladen. Bitte warten …';
     try {
-        worker = new Worker('./speech-worker.js', { type: 'module' });
+        worker = new Worker('./speech-worker.js?v=2', { type: 'module' });
         watchdog = setTimeout(() => reset('Laden dauert zu lange. Bitte erneut im WLAN versuchen.'), 180000);
         worker.onerror = () => reset('Der lokale Sprachtest konnte nicht gestartet werden. Es gibt keinen Cloud-Fallback.');
         worker.onmessage = ({ data }) => {
+            if (data.type === 'phase') {
+                phase(data.phase);
+                statusText.textContent = 'Sprachmodell wertet lokal aus …';
+            }
             if (data.type === 'progress') statusText.textContent = `Modelldatei wird geladen: ${data.percent} %`;
             if (data.type === 'ready') {
                 clearTimeout(watchdog);
+                phase(null);
                 controls('ready');
                 statusText.textContent = 'Bereit. Du kannst jetzt auch WLAN ausschalten und lokal testen.';
             }
             if (data.type === 'result') {
                 clearTimeout(watchdog);
+                phase(null);
                 controls('ready');
                 resultText.textContent = data.text.trim() ? `Erkannt: ${data.text.trim()}` : 'Kein Text erkannt.';
                 statusText.textContent = `Lokal ausgewertet in ${data.seconds.toFixed(1)} Sekunden. Keine automatische Bewertung.`;
@@ -84,22 +104,29 @@ recordButton.onclick = async () => {
         recording.onstop = async () => {
             if (attempt !== generation) return;
             releaseMicrophone();
+            recorder = null;
             controls('processing');
+            phase('Audio dekodieren');
             statusText.textContent = 'Aufnahme wird ausschließlich auf diesem Gerät ausgewertet …';
             watchdog = setTimeout(() => reset('Auswertung abgebrochen: zu langsam für diesen Versuch.'), 90000);
             try {
                 const buffer = await new Blob(chunks, { type: recording.mimeType }).arrayBuffer();
                 chunks.length = 0;
                 if (attempt !== generation) return;
-                const decoded = await audioContext.decodeAudioData(buffer);
+                let decoded = await audioContext.decodeAudioData(buffer);
                 await audioContext.close(); audioContext = null;
                 if (attempt !== generation) return;
+                phase('Audio auf 16 kHz umrechnen');
                 const offline = new OfflineAudioContext(1, Math.ceil(Math.min(decoded.duration, 4) * 16000), 16000);
                 const source = offline.createBufferSource();
                 source.buffer = decoded; source.connect(offline.destination); source.start();
                 const rendered = await offline.startRendering();
                 if (attempt !== generation) return;
+                source.disconnect();
+                source.buffer = null;
+                decoded = null;
                 const audio = rendered.getChannelData(0);
+                phase('Auswertung an Worker übergeben');
                 worker.postMessage({ type: 'recognize', audio }, [audio.buffer]);
             } catch { if (attempt === generation) reset('Diese Aufnahme konnte lokal nicht verarbeitet werden.'); }
         };
