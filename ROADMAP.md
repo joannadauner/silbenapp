@@ -192,3 +192,33 @@ unterschieden. Es wird weder eine Aufnahme noch ein Sprachpaket-Download gestart
 Es gibt keinen Cloud-Fallback. Eine positive Meldung bestätigt nur die gemeldete
 Verfügbarkeit, nicht die Erkennungsqualität. Prüfung auf iPhone/iPad steht aus.
 Referenz: https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition/available_static
+
+## Separater lokaler Sprachprototyp (noch auf dem iPad zu testen)
+
+Genehmigte Ausnahme: Transformers.js 3.8.1, ONNX Runtime über diese Bibliothek und
+Whisper Tiny (mehrsprachig, q8, feste Modellrevision) für einen separaten Test.
+Aufruf aus den Einstellungen über `speech-test.html`. Keine Änderung an Lernrunden.
+
+Bibliothek und Modell werden erst nach „Sprachmodell laden“ von jsDelivr bzw.
+Hugging Face bezogen. Downloads enthalten übliche Verbindungsdaten, keine Aufnahme.
+WebAssembly mit einem Thread wird verwendet, ohne WebGPU vorauszusetzen.
+Das Mikrofon startet erst auf Antippen, maximal vier Sekunden. Die Aufnahme wird
+lokal auf 16 kHz Mono umgerechnet und an einen eigenen Worker übergeben. Nach Laden
+blockiert dieser weitere fetch-Aufrufe. Keine Speicherung von Audio/Ergebnis,
+kein Cloud-Fallback, keine automatische Richtig/Falsch-Bewertung.
+
+Abbruch, Hintergrundwechsel oder Verlassen beenden Mikrofon und Worker. Zeitlimits
+fangen langes Laden (180 s) bzw. lange Auswertung (90 s) ab. Die Testseite ist bewusst
+nicht Teil des Offline-Caches der Lern-App. Modellcaching durch die Bibliothek ist
+möglich; ein dauerhaft offline startbarer Sprachtest ist damit noch nicht zugesagt.
+
+Gerätetest: iPad 9. Generation, iPadOS 26.3.1. Im WLAN Modell laden, dann z. B.
+„Mi“, „Mo“, „Omi“ einzeln aufnehmen. Ergebnis und Auswertungsdauer vergleichen;
+Stille, verweigerte Mikrofonfreigabe, Abbruch und erneutes Laden ausprobieren.
+Nach „Bereit“ WLAN ausschalten und erneut aufnehmen, um lokale Auswertung zu prüfen.
+Keine vorgegebene Silbe wird als Hinweis an das Modell geschickt.
+
+28 automatisierte Tests bestehen, einschließlich Worker-Verarbeitung/Netzwerksperre
+mit simuliertem Modell. Reales Laden und Audio auf dem iPad sind noch nicht getestet.
+Quellen: https://huggingface.co/docs/transformers.js und
+https://huggingface.co/onnx-community/whisper-tiny (Modell/Lizenz: MIT).
