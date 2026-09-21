@@ -733,3 +733,10 @@ Screenreader erhalten zusammenhängenden Text. Auf den blauen primären Buttons
 wechseln Weiß und Hellgrau (#d9d9d9). Lernaufgaben behalten Blau und Rot.
 Einstellungen, Elternübersicht
 und technische Updatehinweise bleiben unverändert.
+
+
+## Standardwochen
+
+Für neue Geräte ohne gespeicherte Wochen sind Woche 1 und 2 aus dem bereitgestellten
+Wochenexport hinterlegt und beide ausgewählt. Woche 3 wird nicht übernommen.
+Vorhandene Wochen und ihre Auswahl bleiben unverändert.

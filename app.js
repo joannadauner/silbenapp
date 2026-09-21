@@ -58,7 +58,8 @@ function loadWeeks() {
     } else {
 
         weeks = [
-            ["ma", "mi", "mo", "mu"]
+            ["mi", "mo", "mu", "um", "im"],
+            ["im", "um", "om", "o-mi", "mo-mo", "o-mo", "i-mo", "mi-o", "mi-mo", "mi-mi"]
         ];
 
     }
