@@ -181,3 +181,14 @@ Bei fehlschlagenden Tests erfolgt kein Deployment. Keine zusätzlichen Testbibli
   Dokumentationsänderungen benötigen keine Änderung am App-Code oder Cache.
 - Nach Änderungen gezielt relevante Abläufe prüfen: Start, Bewertungen,
   Wiederholungen, Abschluss, Speicherung; bei Layoutänderungen beide Ausrichtungen.
+
+
+## Erster Schritt zur lokalen Spracherkennung
+
+In den Einstellungen prüft „Unterstützung prüfen“ auf ausdrückliches Antippen
+die Browser-Unterstützung für `de-DE` mit `processLocally: true`. Fehlende APIs,
+fehlendes Sprachpaket, laufender Download, Nichtverfügbarkeit und Fehler werden
+unterschieden. Es wird weder eine Aufnahme noch ein Sprachpaket-Download gestartet.
+Es gibt keinen Cloud-Fallback. Eine positive Meldung bestätigt nur die gemeldete
+Verfügbarkeit, nicht die Erkennungsqualität. Prüfung auf iPhone/iPad steht aus.
+Referenz: https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition/available_static

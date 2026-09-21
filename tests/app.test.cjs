@@ -197,3 +197,48 @@ test('new devices receive two selected default weeks; existing settings are pres
     assert.deepEqual(b.value('weeks'), [['so']]);
     assert.deepEqual(b.value('selectedWeeks'), []);
 });
+
+for (const [result, expected] of [
+    ['available', 'lokal verfügbar'], ['downloadable', 'Sprachpaket fehlt'],
+    ['downloading', 'lädt bereits'], ['unavailable', 'keine lokale deutsche'],
+    ['unexpected', 'unbekannten Status']
+]) {
+    test(`local speech check handles ${result} without starting recognition`, async () => {
+        const a = app();
+        let calls = 0;
+        function Recognition() { throw Error('Must not instantiate recognition'); }
+        Recognition.prototype.processLocally = false;
+        Recognition.available = async options => {
+            calls++;
+            assert.equal(options.processLocally, true);
+            assert.equal(options.langs.join(), 'de-DE');
+            return result;
+        };
+        a.context.window.isSecureContext = true;
+        a.context.window.SpeechRecognition = Recognition;
+        await a.run('checkLocalSpeechSupport()');
+        assert.equal(calls, 1);
+        assert.ok(a.run("document.getElementById('local-speech-status').textContent").includes(expected));
+        assert.equal(a.run("document.getElementById('check-local-speech').disabled"), false);
+    });
+}
+
+test('missing local API never falls back to starting recognition', async () => {
+    const a = app();
+    a.context.window.isSecureContext = true;
+    a.context.window.webkitSpeechRecognition = function () { throw Error('Must not start'); };
+    await a.run('checkLocalSpeechSupport()');
+    assert.match(a.run("document.getElementById('local-speech-status').textContent"), /keine prüfbare/);
+});
+
+test('blocked local speech check reports failure and allows retry', async () => {
+    const a = app();
+    function Recognition() {}
+    Recognition.prototype.processLocally = false;
+    Recognition.available = async () => { throw Error('Not allowed'); };
+    a.context.window.isSecureContext = true;
+    a.context.window.SpeechRecognition = Recognition;
+    await a.run('checkLocalSpeechSupport()');
+    assert.match(a.run("document.getElementById('local-speech-status').textContent"), /nicht geprüft/);
+    assert.equal(a.run("document.getElementById('check-local-speech').disabled"), false);
+});
