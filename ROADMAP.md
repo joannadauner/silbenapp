@@ -1,742 +1,160 @@
-# Silben-App – Roadmap
+# Silben-App – Stand und nächste Schritte
 
-## Projektziel
+## Getesteter stabiler Stand · 22.09.2026
 
-Die Web-App unterstützt Kinder beim Lesenlernen mit der Silbenmethode.
+Die App wurde vom Nutzer mit Kindern erfolgreich im Alltag getestet. Inhalte,
+Rundenlänge und Wiederholungen passen zum wochenweisen Lernfortschritt.
+Referenz des aktuellen App-Stands: Commit `6f61988`.
+Dies ist eine Dokumentation des getesteten Stands, keine neue Release-Nummer
+und kein neu angelegter Git-Tag. Frühere Versionspläne sind keine offenen Aufträge.
 
-Eltern können wöchentlich neue Silben eintragen. Die App zeigt freigeschaltete Silben zufällig an und unterstützt Wiederholung, schrittweisen Lernfortschritt und später auch Wörter sowie optional Spracherkennung.
+Öffentliche App: https://joannadauner.github.io/silbenapp/
 
-Die Anwendung soll:
+## Vorhandene Funktionen
 
-- plattformunabhängig funktionieren
-- auf Smartphone, Tablet und Desktop nutzbar sein
-- möglichst datenschutzfreundlich sein
-- ohne Benutzerkonto funktionieren
-- ohne Backend auskommen
-- möglichst einfach wartbar bleiben
-- langfristig auch von anderen Familien genutzt werden können
+### Inhalte und Wochenauswahl
 
-Technisch soll die App zunächst nur aus:
+- Wochen mit Silben und zweisilbigen Wörtern verwalten; beliebige Wochen per Checkbox auswählen.
+- Nur ausgewählte Wochen üben. Die höchste ausgewählte Woche erhält bei gefüllten
+  Pools 60 % Auswahlwahrscheinlichkeit, die übrigen zusammen 40 %; keine feste Rundenquote.
+- Neue Aufgaben beginnen zufällig klein oder groß. Wiederholungen behalten die exakte Schreibweise.
+- Zweisilbige Wörter mit Bindestrich eingeben, etwa `o-mi`. Die Lernansicht zeigt
+  Blau (#1327e3) und Rot (#ff0000) ohne Trennstrich. Einfache Silben bleiben blau.
+- Neue Geräte erhalten beide Standardwochen ausgewählt; vorhandene Daten werden nicht ersetzt:
+  - Woche 1: `mi, mo, mu, um, im`
+  - Woche 2: `im, um, om, o-mi, mo-mo, o-mo, i-mo, mi-o, mi-mo, mi-mi`
+- Neue zusätzliche Wochen sind zunächst abgewählt.
 
-- HTML
-- CSS
-- Vanilla JavaScript
+### Leserunden und Wiederholungen
 
-bestehen.
+- 10 Startaufgaben einschließlich bis zu fünf übernommener Wiederholungen;
+  maximal 15 angezeigte Aufgaben pro Runde. Keine Leben oder Fehlergrenze.
+- „Richtig“ erledigt den Wiederholungsauftrag der exakten Schreibweise und entfernt
+  seine noch eingeplanten Wiederholungen. `Ma` und `ma` sind getrennte Aufträge.
+- „Nochmal“ speichert einen offenen Auftrag und plant dieselbe Aufgabe erneut ein,
+  möglichst nach 3–5 anderen Aufgaben, am Rundenende gegebenenfalls früher.
+- Erneutes „Nochmal“ ist möglich. Nach Erreichen der Obergrenze bleiben offene
+  Aufträge für spätere Runden gespeichert. Pro Schreibweise gibt es nur einen Auftrag.
+- Aufträge aus abgewählten Wochen warten. Gelöschte Einträge werden beim nächsten
+  gültigen Rundenstart aus dem Wiederholungsspeicher entfernt.
+- Grüner Fortschrittsbalken: wächst bei „Richtig“, bleibt bei „Nochmal“ stehen und
+  ist am Rundenende immer voll, auch wenn bei Aufgabe 15 noch Wiederholungen offen sind.
+- Grünes Häkchen bzw. grüne Lupe im Stickerstil erscheinen eine Sekunde rechts
+  neben der Aufgabe. Währenddessen sind weitere Bewertungen gesperrt.
+- Blaues X auf grauem Hintergrund beendet nach Rückfrage vorzeitig: zurück zur
+  Startseite, ohne Auszeichnung, gespeicherte Wiederholungen bleiben erhalten.
 
-Keine Frameworks, kein React und keine Datenbank, solange diese nicht wirklich notwendig werden.
+### Abschluss und Elternübersicht
 
----
+| Ergebnis der aktuellen Runde | Auszeichnung | Überschrift |
+| --- | --- | --- |
+| Keine unsichere Antwort | Goldener Pokal | Leserunde super geschafft! |
+| Unsichere Antworten später alle gelöst | Farbiger Stern | Leserunde mit etwas Übung geschafft! |
+| Noch unsichere Schreibweisen offen | Grüner Haken | Leserunde geschafft! Bleib dran! |
 
-# Version 0.1 – Grundfunktion
-
-## Ziel
-
-Eine erste vollständig nutzbare Version zum Testen des Lernprinzips.
-
-## Funktionen
-
-- Silben nach Wochen verwalten
-- neue Wochen hinzufügen
-- Silben lokal im Browser speichern
-- Übungsrunde starten
-- 15 reguläre Aufgaben pro Runde
-- zufällige Auswahl der Silben
-- aktuelle Woche stärker gewichten
-- ältere Wochen weiterhin einbeziehen
-- gleiche Silbe möglichst nicht direkt hintereinander anzeigen
-- Silben zufällig darstellen als:
-  - `ma`
-  - `Ma`
-- drei Bewertungen:
-  - Richtig
-  - Nochmal
-  - bei „Nochmal“ oder „Weiß ich nicht“:
-  - Silbe später erneut anzeigen
-  - nicht direkt wiederholen
-  - exakte Schreibweise erhalten
-- Abschlussbildschirm nach der Übungsrunde
-
-## Status
-
-Umgesetzt.
-
----
-
-# Version 0.2 – Lernlogik verbessern
-
-## Ziel
-
-Die Übungslogik robuster und lernpsychologisch sinnvoller machen.
-
-## 0.2.1 – Übungswochen per Checkbox auswählen
-
-Eltern wählen unter „Silben einstellen“ beliebige Wochen unabhängig voneinander
-über Checkboxen aus. Das Dropdown für eine einzelne aktuelle Woche entfällt.
-Nur angehakte Wochen werden für neue Aufgaben und offene Wiederholungen verwendet.
-
-Beispiel: Sind Woche 1 und Woche 3 angehakt, werden nur deren Silben geübt.
-Woche 2 wird nicht automatisch einbezogen. Woche 3 ist als höchste ausgewählte
-Woche bei der Erzeugung neuer Aufgaben stärker gewichtet: Sind beide Silbenpools
-gefüllt, entfallen 60 % der Auswahlwahrscheinlichkeit auf diese Woche und 40 %
-auf die übrigen ausgewählten Wochen zusammen. Das ist keine feste Quote pro Runde.
-
-Die Auswahl wird in localStorage gespeichert. Beim ersten Laden mit der neuen
-Auswahl werden die bisher aktuelle und ihre vorherigen Wochen als Häkchen übernommen.
-Neu hinzugefügte Wochen sind zunächst abgewählt. Zum Start muss mindestens eine
-Woche mit Silben ausgewählt sein.
-
-Offene Wiederholungen bleiben beim Abwählen einer Woche gespeichert. Sie warten,
-bis ihre Silbe wieder in einer ausgewählten Woche enthalten ist. Kommt dieselbe
-Silbe auch in einer anderen angehakten Woche vor, darf sie weiterhin geübt werden.
-Die exakte Schreibweise des Wiederholungsauftrags bleibt erhalten.
-
-### Status
-
-Umgesetzt.
-
----
-
-## 0.2.2 – Wiederholungslogik verbessern
-
-### Ziel
-
-Falsch oder unsicher gelesene Silben sollen zuverlässig erneut erscheinen.
-
-### Gewünschtes Verhalten
-
-- Start mit 15 Aufgaben: neue Aufgaben und bis zu fünf offene Wiederholungen gemischt
-- ohne offene Wiederholungen werden 15 neue Aufgaben erzeugt
-- zusätzliche Wiederholungen möglichst nach 3–5 anderen Aufgaben
-- maximal 20 angezeigte Aufgaben pro Runde, unabhängig von der Fehlerzahl
-- keine Leben und kein Abbruch wegen unsicherer Antworten
-- offene Wiederholungen sofort in localStorage speichern und in nächste Runden übernehmen
-- pro exakter Schreibweise nur ein offener Auftrag (`Ma` und `ma` bleiben getrennt)
-- „Richtig“ erledigt den Auftrag und entfernt seine noch eingeplante Wiederholung
-- übernommene Aufträge bleiben bis zur richtigen Antwort gespeichert, auch bei Neuladen
-- nur ausgewählte Wochen werden verwendet; offene Aufträge für Silben außerhalb
-  dieser Auswahl bleiben gespeichert und warten auf erneute Auswahl
-- aus den Wochen entfernte Silben werden beim nächsten gültigen Rundenstart bereinigt
-
-### Fortschrittsanzeige
-
-Grüner Fortschrittsbalken im Stickerstil ohne sichtbaren Aufgabenzähler.
-Am Rundenende erscheint „Für heute geschafft!“.
-
-### Status
-
-Umgesetzt. Offene Wiederholungen bleiben auch über die Grenze von 20 Aufgaben
-hinaus für spätere Runden gespeichert. Am Rundenende können Wiederholungen
-früher als nach drei anderen Aufgaben erscheinen, wenn weniger Aufgaben übrig sind.
-
----
-
-## Visuelles Rundenfeedback (Ticket #2)
-
-Umgesetzt: Der Abschluss zeigt eine feste, große SVG-Grafik. Alle drei Motive
-sind gleich groß, zentral und durch ihre Form ohne Lesen unterscheidbar.
-
-- Goldener Pokal: keine unsichere Antwort in der aktuellen Runde.
-- Silberner Stern mit freundlichem Gesicht: mindestens eine unsichere Antwort,
-  anschließend alle in dieser Runde unsicheren Schreibweisen richtig beantwortet.
-- Grüner Haken im Kreis: bei Aufgabe 20 sind noch Schreibweisen aus dieser Runde offen.
-
-Die letzte Antwort je exakter Schreibweise zählt; `Ma` und `ma` bleiben getrennt.
-Nicht gezeigte gespeicherte Wiederholungen beeinflussen das Ergebnis nicht.
+Nicht gezeigte offene Aufträge aus früheren Runden beeinflussen die Auszeichnung nicht.
 Direkt richtig gelesene übernommene Wiederholungen verhindern den Pokal nicht.
-Es gibt keine zusätzliche Fehlergrenze für den Silberstern. Die Bewertung wird
-bei jeder Runde zurückgesetzt und nicht dauerhaft gespeichert. Offene
-Wiederholungen bleiben wie bisher in localStorage erhalten.
 
-Die Grafiken haben zugängliche Textbeschreibungen; ergänzende kurze Texte richten
-sich an Eltern. Keine Fehlerzahlen, Warnsymbole oder leeren Bewertungssterne.
-„Noch eine Runde“ und „Zur Startseite“ bleiben verfügbar.
-
----
-
-## Feedback nach jeder Silbe (Ticket #3)
-
-Nach „Richtig“ erscheint ein grüner Haken, nach „Nochmal“
-eine Lupe als feste SVG-Grafik rechts neben der Silbe, vertikal mittig, eingeblendet.
-Die bewertete Silbe bleibt während des 1,0 Sekunden langen Overlays unverändert sichtbar, danach folgt automatisch
-die nächste Aufgabe. Auch die letzte Antwort erhält Feedback vor der Rundenauszeichnung.
-
-Währenddessen sind alle Antwortbuttons gesperrt; zusätzliche Bewertungen werden
-ignoriert. Das Symbol liegt als Overlay über der Silbe, ohne das Layout zu verschieben.
-Eine Textbeschreibung wird für Screenreader bereitgestellt. Es gibt keine Töne,
-blinkenden Animationen oder negativen Symbole. Wiederholungen werden sofort gespeichert.
-Eine neue Runde entfernt altes Feedback und bricht einen noch laufenden Timer ab.
-
----
-
-# Version 0.3 – Interface vereinfachen
-
-## Ziel
-
-Die Aufmerksamkeit des Kindes stärker auf die Silbe lenken.
-
-## Übungsansicht
-
-Umgesetzt in Ticket #4: Zwei große Bewertungsbuttons zeigen ausschließlich
-feste SVG-Symbole, ohne sichtbaren Text:
-
-- Häkchen: „Richtig“, mit grünem Häkchen als Feedback.
-- Lupe: „Nochmal“, mit blauer Lupe als Feedback.
-
-Die zugänglichen Namen „Richtig“ und „Nochmal“ bleiben für Screenreader erhalten.
-„Weiß ich nicht“ entfällt. Die Feedbackdauer von 1,0 Sekunden, die Klicksperre,
-Wiederholungslogik, Speicherung und Rundenauszeichnungen bleiben unverändert.
-
-## Anforderungen
-
-- große Touchflächen
-- geeignet für Tablet und Smartphone
-- klare visuelle Hierarchie
-- Silbe bleibt das wichtigste Element
-- möglichst wenig Ablenkung
-- keine unnötigen Animationen
-- ruhige Rückmeldung statt starker Gamification
-
----
-
-## Elternmodus
-
-Die App soll zunächst davon ausgehen, dass ein Erwachsener die Antwort bewertet.
-
-Das Kind konzentriert sich hauptsächlich auf die Silbe.
-
-Der Erwachsene bedient:
-
-- Richtig
-- Nochmal
-
-Später kann zusätzlich ein Selbstlernmodus entstehen.
-
----
-
-# Version 0.4 – Wörter
-
-## Status
-
-Zweisilbige Wörter sind umgesetzt und werden mit einzelnen Silben in derselben
-Runde geübt. Es gibt keinen separaten Wortmodus.
-
-## Eingabe und Darstellung
-
-Eltern tragen Wörter in die vorhandenen Wochenfelder ein. Ein Bindestrich markiert
-die Silbengrenze: `O-mi, Mo-mo, O-mo, I-mo, Mi-mi, Mi-mo, Mi-o`.
-Einträge bleiben durch Kommas getrennt. Leerzeichen um den Bindestrich werden entfernt.
-Bei genau zwei nicht leeren Teilen wird der erste dunkelblau und der zweite rot
-angezeigt, ohne sichtbaren Bindestrich und ohne Lücke im Wort.
-
-Neue Aufgaben erscheinen wie bisher zufällig klein oder mit großem Anfangsbuchstaben,
-z. B. `omi` oder `Omi`. Wiederholungen behalten Schreibweise und Silbengrenze exakt.
-Wochenauswahl, Gewichtung, lokale Speicherung, Rundengröße, Feedback und Auszeichnungen
-gelten für Wörter genauso wie für einzelne Silben. Bestehende Einträge ohne
-Bindestrich werden weiterhin einfarbig angezeigt.
-
----
-
-# Version 0.5 – Selbstlernmodus
-
-## Ziel
-
-Das Kind kann die App auch ohne direkte Bewertung durch einen Erwachsenen verwenden.
-
-## Möglicher Ablauf
-
-```text
-Mi
-
-[Weiter]
-```
-
-Das Kind liest laut und geht anschließend selbst weiter.
-
-Optional:
-
-```text
-Nochmal ansehen
-```
-
-Eine Selbstbewertung mit „richtig“ oder „falsch“ ist nicht notwendig.
-
----
-
-# Version 0.6 – Spracherkennung experimentell
-
-## Ziel
-
-Die App versucht automatisch zu erkennen, ob die angezeigte Silbe richtig gelesen wurde.
-
-## Grundprinzip
-
-```text
-Silbe erscheint
-↓
-Kind liest laut
-↓
-Spracherkennung
-↓
-Ergebnis prüfen
-```
-
-Mögliche Ergebnisse:
-
-```text
-richtig
-unsicher
-nicht erkannt
-```
-
-Bei Unsicherheit:
-
-```text
-Noch einmal
-```
-
-Nicht sofort:
-
-```text
-Falsch
-```
-
-## Anforderungen
-
-- Kinderstimmen sind schwieriger zu erkennen als Erwachsenenstimmen
-- einzelne Silben sind schwieriger als ganze Wörter
-- keine falsche Sicherheit erzeugen
-- Spracherkennung nur als Zusatzfunktion
-- manueller Modus muss immer verfügbar bleiben
-
-## Datenschutz
-
-Bevorzugt:
-
-- lokale Verarbeitung im Browser
-- keine dauerhafte Speicherung von Audio
-- keine Benutzerkonten
-- keine Übertragung von Sprachdaten, wenn vermeidbar
-
-Cloud-basierte Spracherkennung nur prüfen, wenn lokale Lösungen nicht ausreichend funktionieren und der Datenschutz transparent geklärt ist.
-
----
-
-# Version 0.7 – Progressive Web App
-
-## Ziel
-
-Die Web-App soll sich wie eine installierbare App verhalten.
-
-## Funktionen
-
-- PWA-Manifest
-- eigenes Icon
-- auf Homescreen installierbar
-- Offline-Nutzung
-- weiterhin normale Nutzung im Browser möglich
-
-Unterstützte Geräte:
-
-- iPhone
-- iPad
-- Android
-- Desktop
-
----
-
-# Version 0.8 – Nutzung durch andere Familien
-
-## Ziel
-
-Die App soll ohne technische Vorkenntnisse von anderen Eltern genutzt werden können.
-
-## Funktionen
-
-- kurze Einführung
-- verständlicher Elternbereich
-- Beispiel-Silben beim ersten Start
-- Einstellungen zurücksetzen
-- optional Export und Import der Silben
-
-Mögliche Funktion:
-
-```text
-Silbenplan exportieren
-```
-
-Dadurch könnten Eltern oder Lehrkräfte vorbereitete Lernsets teilen, ohne Benutzerkonten oder Datenbank zu benötigen.
-
----
-
-# Version 0.9 – Lernlogik weiterentwickeln
-
-## Ziel
-
-Die Auswahl der Silben kann später intelligenter gewichtet werden.
-
-Nur umsetzen, wenn Tests zeigen, dass dies sinnvoll ist.
-
-## Mögliche Gewichtung
-
-```text
-aktuelle Woche     50 %
-letzte Woche       25 %
-ältere Wochen      25 %
-```
-
-## Innerhalb einer Sitzung
-
-Zusätzlich könnte berücksichtigt werden:
-
-- häufig falsch gelesene Silben erscheinen häufiger
-- richtig gelesene Silben erscheinen seltener
-- schwierige Silben werden zeitversetzt erneut gezeigt
-
-Wichtig:
-
-Keine dauerhafte Leistungsbewertung des Kindes notwendig.
-
-Die Anpassung kann ausschließlich innerhalb einer Sitzung erfolgen.
-
----
-
-# Version 1.0 – Öffentliche stabile Version
-
-## Ziel
-
-Eine einfache, stabile und öffentlich nutzbare Lern-App.
-
-## Mindestumfang
-
-- Silben verwalten
-- Wochen verwalten
-- Übungswochen unabhängig per Checkbox auswählen
-- sinnvolle Wiederholungslogik
-- Groß- und Kleinschreibung
-- Elternmodus
-- Wörter
-- einfache Bedienung
-- mobile Nutzung
-- lokale Datenspeicherung
-- PWA
-- Datenschutzhinweise
-- keine Benutzerkonten
-- kein Backend
-
-Spracherkennung ist für Version 1.0 optional und darf die normale Nutzung nicht voraussetzen.
-
----
-
-# Spätere Ideen
-
-Nicht Teil des aktuellen Entwicklungsziels.
-
-Mögliche Erweiterungen:
-
-- Wortlisten aus vorhandenen Silben generieren
-- Fantasiewörter
-- Lesen ganzer kurzer Sätze
-- Laut-Buchstaben-Training
-- individuelle Gewichtung schwieriger Silben
-- mehrere Lernprofile auf einem Gerät
-- Teilen von Lernsets
-- Lehrkraft-Modus
-- vordefinierte Lernsets für verschiedene Silbenmethoden
-- unterschiedliche Schwierigkeitsstufen
-- optionale Audioausgabe
-- unterschiedliche Übungsmodi
-
-Diese Funktionen sollen erst geprüft werden, wenn die grundlegende App erfolgreich getestet wurde.
-
----
-
-# Entwicklungsprinzipien
-
-Bei jeder neuen Funktion gilt:
-
-1. Die App soll einfach bleiben.
-2. Bestehende Funktionen dürfen nicht unbeabsichtigt verschwinden.
-3. Datenschutz hat hohe Priorität.
-4. Keine unnötigen Abhängigkeiten einführen.
-5. Keine Frameworks verwenden, solange HTML, CSS und JavaScript ausreichen.
-6. Mobile Nutzung immer mitdenken.
-7. Große Touchflächen verwenden.
-8. Kindgerechte Gestaltung bedeutet nicht automatisch Gamification.
-9. Lernlogik zuerst testen, danach technische Komplexität erhöhen.
-10. Spracherkennung darf nie Voraussetzung für die Nutzung sein.
-11. Neue Funktionen sollen zuerst möglichst einfach umgesetzt und getestet werden.
-12. Die App soll auch ohne technische Vorkenntnisse verständlich bedienbar sein.
-
----
-
-# Technische Grundstruktur
-
-Die App besteht aktuell aus:
-
-```text
-silben-app/
-│
-├── index.html
-├── style.css
-├── app.js
-├── AGENTS.md
-└── ROADMAP.md
-```
-
-## index.html
-
-Enthält:
-
-- Seitenstruktur
-- Screens
-- Buttons
-- Eingabefelder
-- Elternbereich
-- Übungsbereich
-
-## style.css
-
-Enthält:
-
-- Layout
-- Typografie
-- Größen
-- Touchflächen
-- responsive Gestaltung
-
-## app.js
-
-Enthält:
-
-- Wochenverwaltung
-- localStorage
-- Zufallsauswahl
-- Übungslogik
-- Wiederholungslogik
-- Navigation zwischen Screens
-- Groß- und Kleinschreibung
-- Fortschrittsanzeige
-
-## AGENTS.md
-
-Enthält Regeln dafür, wie Codex am Projekt arbeiten soll.
-
-## ROADMAP.md
-
-Enthält Entwicklungsziele und geplante Versionen.
-
----
-
-# Aktueller Entwicklungsstand
-
-Aktuell vorhanden:
-
-- HTML/CSS/JavaScript-Projekt
-- lokale Entwicklung mit VS Code
-- Live Server
-- Wochenverwaltung
-- localStorage
-- neue Wochen hinzufügen
-- zufällige Silbenauswahl
-- stärkere Gewichtung der höchsten ausgewählten Woche
-- freie Wochenauswahl per Checkbox mit lokaler Speicherung
-- nur ausgewählte Wochen werden verwendet
-- zufällige Groß-/Kleinschreibung
-- exakte Schreibweise bei Wiederholung
-- 15 Startaufgaben mit eingemischten offenen Wiederholungen, maximal 20 Aufgaben
-- Wiederholungen möglichst nach 3–5 anderen Aufgaben
-- grüner Fortschrittsbalken im Stickerstil, keine Leben
-- offene Wiederholungen lokal über mehrere Runden speichern
-- zwei Symbolbuttons: Häkchen (Richtig) und Lupe (Nochmal)
-- Abschlussbildschirm
-- Codex in VS Code eingerichtet
-
----
-
-# Abschluss Version 0.2.2
-
-## Version 0.2.2
-
-Wiederholungslogik umgesetzt und anhand automatisierter Logikprüfungen geprüft.
-
-Ziel:
-
-- 15 Startaufgaben einschließlich übernommener Wiederholungen
-- Wiederholungen auch nach Aufgabe 15 anzeigen
-- maximal 20 Aufgaben
-- offene Wiederholungen bis zur Obergrenze bearbeiten und den Rest für spätere Runden speichern
-- exakte Schreibweise beibehalten
-- verständliche Fortschrittsanzeige
-
-Nächster Entwicklungsschritt:
-
-## Version 0.3
-
-Interface der Übungsansicht vereinfachen.
-
-
-## Fortschrittsbalken
-
-Der Balken beginnt leer. Bei „Richtig“ wächst er um den Anteil der Reststrecke,
-der einer noch eingeplanten Aufgabe entspricht. Bei „Nochmal“ bleibt er stehen;
-zusätzliche Wiederholungen werden bei der Größe der folgenden Schritte berücksichtigt.
-Er geht nie zurück. Beim Rundenende wird er immer vollständig gefüllt, auch wenn
-nach 20 Aufgaben noch Wiederholungen offen sind. Der volle Balken erscheint schon
-während des letzten einsekündigen Stickerfeedbacks vor dem Abschlussbildschirm.
-Eine neue Runde setzt ihn zurück. Grün (#40e866), weißer Rand und Schatten passen
-zu den Feedbackstickern. Der Fortschrittswert ist für Screenreader zugänglich.
-
-
-## Bewertungsbuttons und vorzeitiges Beenden
-
-Die beiden Symbolbuttons für „Richtig“ und „Nochmal“ haben einen weißen Stickerrand
-und Schatten. In der Übungsansicht befindet sich oben rechts ein blaues X auf grauem Hintergrund
-mit dem zugänglichen Namen „Runde vorzeitig beenden“.
-Nach einer bestätigten Rückfrage kehrt die App ohne Rundenauszeichnung zur Startseite
-zurück. Ein laufender Feedbacktimer wird abgebrochen; bereits gespeicherte offene
-Wiederholungen bleiben erhalten. Wird die Rückfrage abgebrochen, geht die Runde weiter.
-
-
-## Wochenexport und -import (umgesetzt)
-
-Unter „Silben einstellen“ stehen Export und Import zur Verfügung. Die Datei
-`silbenapp-wochen.json` enthält `format: "silbenapp-wochen"`, `version: 1`,
-`weeks` (Liste von Wochen mit Texteingaben) und `selectedWeeks` (ausgewählte
-Wochen als nullbasierte Indizes). Bindestriche zur Silbentrennung bleiben erhalten.
-Der Export berücksichtigt die aktuellen Formulareingaben, auch vor dem Speichern.
-
-Vor dem Import werden Dateiformat, Version, Wochen und Auswahl geprüft. Erst nach
-Bestätigung ersetzt die Datei alle bisherigen Wochen samt Auswahl und wird lokal
-gespeichert. Abbrechen oder ungültige Dateien verändern die Wochen nicht.
-Leere Wochen und eine leere Auswahl sind erlaubt. Offene Wiederholungen werden
-weder exportiert noch importiert; die vorhandenen Aufträge bleiben auf dem Gerät.
-Wie bisher werden Aufträge für entfernte Einträge beim nächsten gültigen Rundenstart
-bereinigt. Der Dateitransfer benötigt keinen Server und keine zusätzlichen Bibliotheken.
-
-
-## PWA – veröffentlicht und auf dem iPad getestet
-
-`manifest.webmanifest`, PNG-App-Symbole und `sw.js` ergänzen Installation und
-Offline-Betrieb. Das Manifest verwendet relative Pfade für Hosting in einem
-Unterordner, beispielsweise GitHub Pages. Wochen und Wiederholungen bleiben lokal;
-es werden ausschließlich die statischen App-Dateien zwischengespeichert.
-
-Auf HTTPS registriert sich der Service Worker automatisch. Erst nach erfolgreicher
-Installation sind alle App-Dateien offline vorhanden. Eine neue Version wartet,
-bis die bisherigen App-Fenster geschlossen sind. Bei Änderungen an gecachten Dateien
-muss die Cache-Version in `sw.js` erhöht werden. Andere App-Caches bleiben erhalten.
-
-Live Server registriert standardmäßig keinen Service Worker. Zum lokalen Test
-`http://localhost:5500/index.html?pwa-test=1` verwenden, Installation im Browser prüfen,
-einmal neu laden und danach offline testen. Zum Weiterentwickeln die Registrierung
-in den Browser-Entwicklerwerkzeugen entfernen und den App-Cache löschen.
-Die HTTP-Adresse im WLAN unterstützt den Service Worker auf dem iPhone nicht.
-
-HTTPS-Veröffentlichung sowie Installation und Offline-Betrieb auf dem iPad sind
-bestätigt. Bestehende Wochen vor dem Wechsel zur neuen Adresse als JSON
-exportieren und dort importieren, da Browserspeicher an die Adresse gebunden ist.
-
-
-## Veröffentlichung über GitHub Pages
-
-Der Workflow `.github/workflows/pages.yml` veröffentlicht nach einem Push auf `main`
-nur HTML, CSS, JavaScript, Manifest und Icons. Die öffentliche Adresse ist
-`https://joannadauner.github.io/silbenapp/`. Der Offline-Cache erhält beim Deployment
-automatisch die Commit-ID als Version. Nach einem Update alle alten App-Fenster
-schließen und neu öffnen; gegebenenfalls ein zweites Mal nach dem Download des Updates.
-
-Für iPhone/iPad: Adresse in Safari öffnen, vollständig laden, zum Home-Bildschirm
-hinzufügen und von dort starten. Nach erfolgreichem Online-Start im Flugmodus testen.
-Vorhandene Wochen über JSON von der lokalen Entwicklungsadresse übertragen.
-
-Vom Nutzer am 20.09.2026 bestätigt:
-- Installation auf dem MacBook über Safari („Zum Dock hinzufügen“) funktioniert.
-- Installation auf dem iPad funktioniert.
-- Offline-Test auf dem iPad im Flugmodus mit ausgeschaltetem WLAN funktioniert.
-
-
-## Kürzere Runden und Elternübersicht (umgesetzt)
-
-Nach dem Praxistest beginnen Runden mit 10 Aufgaben einschließlich bis zu fünf
-übernommenen Wiederholungen. Maximal 15 Aufgaben werden angezeigt; danach noch
-offene Wiederholungen bleiben gespeichert. Fortschritt und Auszeichnungen
-verwenden weiterhin die vorhandene Logik mit der neuen Obergrenze.
-
-Auf dem Abschlussbildschirm lässt sich „Für Eltern“ öffnen. Unter „Das üben wir
-weiter“ stehen alle offenen Silben und Wörter, einschließlich früherer Runden
-und abgewählter Wochen. Schreibweise und Silbenfarben bleiben erhalten. Ohne
-offene Einträge erscheint ein entsprechender Hinweis. Die Übersicht beginnt
-nach jeder Runde zugeklappt und enthält keine Fehlerquote oder Zusatzbewertung.
-
-
-## Anpassung an Bildschirm und Ausrichtung
-
-Die App nutzt die dynamische sichtbare Fensterhöhe bereits beim Start und
-berücksichtigt sichere Bildschirmränder. Im Querformat stehen die Bewertungsbuttons
-auch auf Tablets nebeneinander. Schmale Bildschirme berücksichtigen die Buttonränder.
-Nach Fenstergrößenänderung, Drehung und Wiederöffnen wird die Heftlinienausrichtung
-im nächsten Animationsframe aktualisiert. Längere Einstellungen und Elternlisten
-bleiben scrollbar. Prüfung auf echten Geräten steht noch aus.
-
-Nachbesserung der Drehungsaktualisierung: zusätzliches Orientierungsereignis,
-Beobachtung der tatsächlichen Layoutgrößen und erneute Ausrichtung nach 350 ms.
-Der gemeldete Fehler muss mit dieser Version noch auf dem iPad nachgetestet werden.
-
-
-## Elternübersicht: nicht sofort erkannte Einträge
-
-„Nicht sofort erkannt“ listet alle in der abgeschlossenen Runde mit „Nochmal“
-bewerteten Silben und Wörter auf, auch wenn sie später richtig gelesen wurden.
-Jede exakte Schreibweise erscheint einmal, Wörter behalten ihre Silbenfarben.
-Die Liste wird für jede neue Runde zurückgesetzt und nicht dauerhaft gespeichert.
-Die separate Liste der noch offenen Wiederholungen bleibt unverändert.
-
-
-## Update-Anzeige
-
-Ein fertig heruntergeladenes Update erscheint auf der Startseite mit „Jetzt
-aktualisieren“. Nur nach Antippen wird der wartende Service Worker aktiviert
-und dieses Fenster neu geladen. Andere Fenster und laufende Runden werden nicht
-automatisch neu geladen. Bei Rückkehr zur App und wiederhergestellter Verbindung
-wird nach Updates gesucht. Die Einstellungen zeigen die kurze Commit-ID des
-geladenen Stands, lokal „Lokal (Entwicklung)“. Gespeicherte Lerndaten bleiben erhalten.
-Die erste Version mit dieser Funktion muss noch über den bisherigen Updateweg
-installiert werden. Der vollständige Updateablauf muss auf dem iPad geprüft werden.
-
-
-## Farbiger Abschlussstern
-
-Die Auszeichnung „Mit Übung geschafft“ zeigt einen Stern in #eeff00 mit
-großen Augen in App-Blau (#1327e3), Akzenten in App-Rot (#ff0000), weißem
-Stickerrand und Schatten. Der Stern ist gegenüber der bisherigen Auszeichnung
-um 25 % größer und bleibt zentriert. Das SVG
-orientiert sich an der bereitgestellten Vorlage. Die Vergabelogik bleibt unverändert.
-
-
-## Update-Korrektur nach Praxistest
-
-Beim Installieren eines Updates werden alle App-Dateien mit `cache: reload`
-angefordert, damit alte HTTP-Cache-Dateien nicht in den neuen Offline-Cache gelangen.
-Nach Aktivierung übernimmt der Worker die Clients. Der Update-Button wartet auf
-den aktivierten Worker, lädt nur einmal neu und erlaubt nach einer Zeitüberschreitung
-einen erneuten Versuch. Andere Fenster laden weiterhin nicht automatisch neu.
-Logikprüfungen bestanden; erneuter Update-Test auf dem iPad steht aus.
-
-
-## Silbenfarben in Kindertexten
-
-Starttitel, Leseaufforderung, Start-/Nochmal-/„Genug für heute.“-Button und die drei
-Ergebnisüberschriften verwenden fest hinterlegte Silbentrennungen. Jede erste
-Silbe eines Wortes ist blau, danach wechseln Grau (#777) und Blau, ohne Trennstriche.
-Screenreader erhalten zusammenhängenden Text. Auf den blauen primären Buttons
-wechseln Weiß und Hellgrau (#d9d9d9). Lernaufgaben behalten Blau und Rot.
-Einstellungen, Elternübersicht
-und technische Updatehinweise bleiben unverändert.
-
-
-## Standardwochen
-
-Für neue Geräte ohne gespeicherte Wochen sind Woche 1 und 2 aus dem bereitgestellten
-Wochenexport hinterlegt und beide ausgewählt. Woche 3 wird nicht übernommen.
-Vorhandene Wochen und ihre Auswahl bleiben unverändert.
+Der Stern ist ein um 25 % vergrößerter Sticker in #eeff00 mit blauen und roten
+Gesichtsdetails. Er hüpft dreimal 22 px hoch, mit dezenter Verformung, insgesamt
+1,8 Sekunden. „Bewegung reduzieren“ deaktiviert die Animation.
+Die Abschlussbuttons heißen „Nochmal“ und „Genug für heute.“.
+
+„Für Eltern“ ist zunächst zugeklappt und zeigt:
+- **Nicht sofort erkannt:** alle in dieser Runde mit „Nochmal“ bewerteten Einträge,
+  auch später gelöste, einmal je Schreibweise. Diese Liste wird je Runde zurückgesetzt.
+- **Das üben wir weiter:** alle noch offenen Wiederholungen, auch aus früheren
+  Runden und abgewählten Wochen. Dieser Stand bleibt lokal gespeichert.
+
+Keine Fehlerquote, Rangliste oder dauerhafte Leistungsbewertung.
+
+### Darstellung und Geräte
+
+- Hintergrund wie liniertes Heft; Textgrundlinien am Linienraster ausgerichtet.
+- Kindertexte verwenden fest hinterlegte Silbengrenzen mit Blau/Grau, auf blauen
+  Buttons Weiß/Hellgrau. Lernaufgaben behalten Blau/Rot. Elterntexte sind unverändert.
+- Startseite ohne den früheren Untertitel „Welche Silbe siehst du?“.
+- Responsive Darstellung ab Start, dynamische Fensterhöhe und sichere Bildschirmränder.
+- Bewertungsbuttons im Querformat nebeneinander; Neuausrichtung beim Drehen,
+  Wiederöffnen und bei Größenänderungen, einschließlich verzögerter Layoutmaße.
+- Lange Einstellungen und Elternlisten bleiben scrollbar.
+- Symbolbuttons und Grafiken haben zugängliche Beschreibungen; farbige Kindertexte
+  werden für Screenreader zusätzlich als zusammenhängender Text bereitgestellt.
+
+### Speicherung und Datentransfer
+
+Nur HTML, CSS und Vanilla JavaScript, keine zusätzlichen Bibliotheken, kein Backend
+und keine Benutzerkonten. Lerndaten liegen im lokalen Browserspeicher:
+`readingWeeks`, `readingSelectedWeeks`, `readingPendingRepeats`.
+Die frühere Wochenauswahl `readingCurrentWeek` wird bei Bedarf migriert.
+Keine automatische Synchronisierung zwischen Geräten oder Webadressen.
+
+Exportdatei `silbenapp-wochen.json`:
+- `format: "silbenapp-wochen"`, `version: 1`
+- `weeks`: Wochen mit Texteingaben einschließlich Bindestrichen
+- `selectedWeeks`: ausgewählte Wochen als nullbasierte Indizes
+
+Der Export berücksichtigt aktuelle Formulareingaben. Import validiert vor dem
+Ersetzen und fragt nach Bestätigung; Abbruch oder ungültige Dateien ändern keine
+Wochen. Offene Wiederholungen werden weder exportiert noch importiert.
+
+### Installation, Offlinebetrieb und Updates
+
+Manifest, App-Icons und Service Worker ermöglichen Installation und Offlinebetrieb
+nach vollständigem Online-Laden. Es werden nur statische App-Dateien gecacht.
+
+GitHub Pages veröffentlicht nach Push auf `main` über `.github/workflows/pages.yml`.
+Nur App-Dateien werden hochgeladen; der Workflow setzt die Commit-ID als Cache-Version
+und die kurze Commit-ID als sichtbare Version in den Einstellungen ein.
+
+Ein fertig geladenes Update wird auf der Startseite angeboten. „Jetzt aktualisieren“
+aktiviert den wartenden Worker und lädt dieses Fenster nach Aktivierung einmal neu.
+Andere Fenster und laufende Runden laden nicht automatisch neu. Bei Rückkehr und
+wiederhergestellter Verbindung wird nach Updates gesucht. App-Dateien werden beim
+Update mit `cache: reload` angefordert, damit alte HTTP-Cache-Inhalte nicht übernommen
+werden. Nach Zeitüberschreitung ist ein erneuter Versuch möglich.
+
+## Bestätigte Tests und Grenzen
+
+Vom Nutzer bestätigt:
+- Erfolgreiche Leserunden mit Kindern, passende Inhalte und hilfreiche Wiederholungen;
+  erneute positive Rückmeldung am 22.09.2026.
+- Kürzere Runden und Elternübersicht funktionieren.
+- Installation auf MacBook und iPad; Offlinebetrieb auf dem iPad im Flugmodus ohne WLAN.
+- Smartphone-Querformat und Aktualisierung nach Gerätedrehung funktionieren.
+- Wochenexport und -import funktionieren.
+- Update über „Jetzt aktualisieren“ nach der Cache-Korrektur erfolgreich getestet;
+  vom Nutzer am 22.09.2026 bestätigt.
+
+Gezielte automatisierte Logikprüfungen wurden während der Entwicklung durchgeführt,
+u. a. für Wiederholungen, Import, Standardwochen und Updatezustände. Sie ersetzen
+keinen vollständigen Browsertest; es gibt derzeit keine eingecheckte Testsuite.
+
+Nicht als geprüft gelten Android,
+alle Browser-/Gerätevarianten oder eine vollständige Barrierefreiheitsprüfung.
+
+## Nächste Schritte
+
+1. Rückmeldung der Lehrerin einholen und als konkrete GitHub-Tickets festhalten.
+2. Neue Funktionen nur aus beobachtetem Bedarf ableiten; derzeit kein zusätzlicher
+   Silben-/Wortfilter und keine Änderung der bewährten Lernlogik geplant.
+
+Optionale spätere Ideen, ohne zugesagte Version oder Umsetzung: Selbstlernmodus,
+Sätze, Audioausgabe, zusätzliche Lernprofile, Lehrkraft-Funktionen und experimentelle
+Spracherkennung. Spracherkennung darf keine Voraussetzung für die normale Nutzung sein.
+Eine Einführung, ein Zurücksetzen der Einstellungen und gesonderte Datenschutzhinweise
+waren frühere Ideen und sind nicht als umgesetzt dokumentiert.
+
+## Entwicklung und Prüfung
+
+- Regeln für Änderungen: `AGENTS.md`.
+- Oberfläche: `index.html`, `style.css`; Lernlogik und Speicherung: `app.js`.
+- PWA: `manifest.webmanifest`, `sw.js`, `icons/`.
+- Deployment: `.github/workflows/pages.yml`.
+- Live Server nutzt standardmäßig keinen Service Worker. Lokaler PWA-Test über
+  `http://localhost:5500/index.html?pwa-test=1`; danach Registrierung und App-Cache
+  in den Entwicklerwerkzeugen entfernen, ohne den lokalen Lernstand zu löschen.
+- Bei App-Änderungen die lokale Cache-Version in `sw.js` erhöhen. Reine
+  Dokumentationsänderungen benötigen keine Änderung am App-Code oder Cache.
+- Nach Änderungen gezielt relevante Abläufe prüfen: Start, Bewertungen,
+  Wiederholungen, Abschluss, Speicherung; bei Layoutänderungen beide Ausrichtungen.
