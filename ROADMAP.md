@@ -128,7 +128,8 @@ Vom Nutzer bestätigt:
 
 Gezielte automatisierte Logikprüfungen wurden während der Entwicklung durchgeführt,
 u. a. für Wiederholungen, Import, Standardwochen und Updatezustände. Sie ersetzen
-keinen vollständigen Browsertest; es gibt derzeit keine eingecheckte Testsuite.
+keinen vollständigen Browsertest. Eine dauerhafte Testsuite ist nun unter
+`tests/app.test.cjs` vorhanden.
 
 Nicht als geprüft gelten Android,
 alle Browser-/Gerätevarianten oder eine vollständige Barrierefreiheitsprüfung.
@@ -144,6 +145,28 @@ Sätze, Audioausgabe, zusätzliche Lernprofile, Lehrkraft-Funktionen und experim
 Spracherkennung. Spracherkennung darf keine Voraussetzung für die normale Nutzung sein.
 Eine Einführung, ein Zurücksetzen der Einstellungen und gesonderte Datenschutzhinweise
 waren frühere Ideen und sind nicht als umgesetzt dokumentiert.
+
+## Automatisierte Tests
+
+Mit Node.js 22 (nur für Entwicklung/CI, keine Laufzeitabhängigkeit der Web-App):
+
+```sh
+node --test tests/*.test.cjs
+```
+
+19 Tests prüfen Rundengrenzen, Wiederholungen einschließlich Speicherung und
+Schreibweise, Wochenauswahl und Gewichtung, Bewertungssperre, Standardwochen sowie
+Importvalidierung, Abbruch und Rücknahme bei Speicherfehlern.
+
+Die Tests laden die echten Funktionen aus `app.js` bis zur Buttonregistrierung
+in einen isolierten JavaScript-Kontext. DOM-Ausgabe, Speicher und Timer werden
+simuliert; die Lernlogik wird nicht nachgebaut. Zufall ist reproduzierbar gesteuert.
+Änderungen an der Grenze `// BUTTONS` erfordern eine Anpassung des Testladers.
+Layout, Browserstart, Service Worker und echte Geräte werden damit nicht geprüft.
+
+`.github/workflows/tests.yml` prüft Pushes und Pull Requests. Der Pages-Workflow
+ruft denselben Testworkflow zusätzlich als Voraussetzung der Veröffentlichung auf.
+Bei fehlschlagenden Tests erfolgt kein Deployment. Keine zusätzlichen Testbibliotheken.
 
 ## Entwicklung und Prüfung
 
