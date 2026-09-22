@@ -26,7 +26,6 @@ jobs:
         run: |
           mkdir -p _site
           cp index.html style.css app.js manifest.webmanifest sw.js _site/
-          cp speech-test.html speech-test.js speech-worker.js _site/
           cp -R icons _site/icons
           sed -i "s/__APP_VERSION__/${GITHUB_SHA:0:7}/" _site/index.html
           # Neue Dateistände erhalten automatisch einen eigenen Offline-Cache.

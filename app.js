@@ -777,44 +777,9 @@ function endPracticeEarly() {
 }
 
 
-// Reine Fähigkeitsprüfung: kein Mikrofon, kein Sprachpaket-Download.
-async function checkLocalSpeechSupport() {
-    const button = document.getElementById("check-local-speech");
-    const status = document.getElementById("local-speech-status");
-    if (button.disabled) return;
-    button.disabled = true;
-    status.textContent = "Lokale Unterstützung wird geprüft …";
-    alignTextToNotebook();
-    try {
-        const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!window.isSecureContext) {
-            status.textContent = "Bitte die App über HTTPS oder localhost öffnen und erneut prüfen.";
-        } else if (!Recognition || typeof Recognition.available !== "function" ||
-            !("processLocally" in Recognition.prototype)) {
-            status.textContent = "Dieser Browser bietet keine prüfbare lokale Spracherkennung an. Es wird keine Aufnahme gestartet.";
-        } else {
-            const result = await Recognition.available({ langs: ["de-DE"], processLocally: true });
-            const messages = {
-                available: "Der Browser meldet: Deutsche Spracherkennung ist auf diesem Gerät lokal verfügbar. Wie gut Silben erkannt werden, ist noch nicht getestet.",
-                downloadable: "Lokale deutsche Spracherkennung ist grundsätzlich möglich, aber das Sprachpaket fehlt. Es wurde kein Download gestartet.",
-                downloading: "Der Browser lädt bereits ein deutsches Sprachpaket. Bitte später erneut prüfen. Diese Prüfung hat keinen Download gestartet.",
-                unavailable: "Der Browser meldet keine lokale deutsche Spracherkennung für dieses Gerät. Es wird keine Aufnahme gestartet."
-            };
-            status.textContent = messages[result] || "Der Browser meldet einen unbekannten Status. Lokale Unterstützung konnte nicht bestätigt werden.";
-        }
-    } catch {
-        status.textContent = "Die lokale Unterstützung konnte nicht geprüft werden. Der Browser kann die Prüfung blockieren. Bitte später erneut versuchen.";
-    } finally {
-        button.disabled = false;
-        alignTextToNotebook();
-    }
-}
-
 // ------------------------------------
 // BUTTONS
 // ------------------------------------
-
-document.getElementById("check-local-speech").addEventListener("click", checkLocalSpeechSupport);
 
 document.getElementById("parent-overview").addEventListener("toggle", alignTextToNotebook);
 

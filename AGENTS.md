@@ -42,11 +42,6 @@ Diese Web-App unterstützt Kinder beim Lesenlernen mit der Silbenmethode.
 - plattformunabhängig
 - Smartphone, Tablet und Desktop unterstützen
 
-## Genehmigter Sprachprototyp
-- Ein separater Testbereich darf Transformers.js und ein lokales Sprachmodell nutzen.
-- Audio bleibt ausschließlich auf dem Gerät, ohne Speicherung oder Cloud-Fallback.
-- Downloads nur nach ausdrücklichem Start; keine automatische Bewertung der Leserunden.
-
 ## Veröffentlichung und Speicherung
 - Wochen, Auswahl und offene Wiederholungen werden in localStorage gespeichert.
 - JSON-Export/-Import umfasst Wochen und Auswahl, nicht den Wiederholungsstand.
