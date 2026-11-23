@@ -476,14 +476,14 @@ function showCurrentSyllable() {
 
 function renderReadingText(card, syllable) {
     const parts = syllable.split("-");
-    const isWord = parts.length === 2 && parts.every(part => part.length > 0);
+    const isWord = parts.length >= 2 && parts.every(part => part.length > 0);
 
-    card.classList.toggle("two-syllable-word", isWord);
+    card.classList.toggle("multi-syllable-word", isWord);
     card.textContent = "";
     if (isWord) {
         parts.forEach((part, index) => {
             const span = document.createElement("span");
-            span.className = index === 0 ? "first-syllable" : "second-syllable";
+            span.className = index % 2 === 0 ? "first-syllable" : "second-syllable";
             span.textContent = part;
             card.appendChild(span);
         });

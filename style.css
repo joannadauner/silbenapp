@@ -161,7 +161,7 @@ button {
 
 /* ANTWORTBUTTONS */
 
-#syllable-card.two-syllable-word {
+#syllable-card.multi-syllable-word {
     font-size: clamp(64px, 16vw, 140px);
     white-space: nowrap;
 }
@@ -450,7 +450,7 @@ button {
     }
 
     #syllable-card,
-    #syllable-card.two-syllable-word {
+    #syllable-card.multi-syllable-word {
         font-size: clamp(48px, 24svh, 140px);
         line-height: 1.05;
     }
@@ -481,7 +481,7 @@ button {
     }
 
     #syllable-card,
-    #syllable-card.two-syllable-word {
+    #syllable-card.multi-syllable-word {
         font-size: clamp(48px, 24svh, 90px);
     }
 }

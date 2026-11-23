@@ -14,12 +14,12 @@ und kein neu angelegter Git-Tag. Frühere Versionspläne sind keine offenen Auft
 
 ### Inhalte und Wochenauswahl
 
-- Wochen mit Silben und zweisilbigen Wörtern verwalten; beliebige Wochen per Checkbox auswählen.
+- Wochen mit Silben und mehrsilbigen Wörtern verwalten; beliebige Wochen per Checkbox auswählen.
 - Nur ausgewählte Wochen üben. Die höchste ausgewählte Woche erhält bei gefüllten
   Pools 60 % Auswahlwahrscheinlichkeit, die übrigen zusammen 40 %; keine feste Rundenquote.
 - Neue Aufgaben beginnen zufällig klein oder groß. Wiederholungen behalten die exakte Schreibweise.
-- Zweisilbige Wörter mit Bindestrich eingeben, etwa `o-mi`. Die Lernansicht zeigt
-  Blau (#1327e3) und Rot (#ff0000) ohne Trennstrich. Einfache Silben bleiben blau.
+- Mehrsilbige Wörter mit Bindestrichen eingeben, etwa `o-mi` oder `ba-na-ne`. Die Lernansicht zeigt
+  abwechselnd Blau (#1327e3) und Rot (#ff0000) ohne Trennstriche. Einfache Silben bleiben blau.
 - Neue Geräte erhalten beide Standardwochen ausgewählt; vorhandene Daten werden nicht ersetzt:
   - Woche 1: `mi, mo, mu, um, im`
   - Woche 2: `im, um, om, o-mi, mo-mo, o-mo, i-mo, mi-o, mi-mo, mi-mi`

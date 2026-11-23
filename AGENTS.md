@@ -3,10 +3,10 @@
 Diese Web-App unterstützt Kinder beim Lesenlernen mit der Silbenmethode.
 
 ## Lernlogik
-- Eltern tragen jede Woche neue Silben und zweisilbige Wörter ein.
+- Eltern tragen jede Woche neue Silben und mehrsilbige Wörter ein.
 - Neue Geräte starten mit Woche 1 und 2; vorhandene gespeicherte Daten bleiben erhalten.
-- Wörter werden mit Bindestrich eingegeben (z. B. `o-mi`). Die Lernansicht zeigt
-  die erste Silbe blau (#1327e3), die zweite rot (#ff0000), ohne Bindestrich.
+- Wörter werden mit Bindestrichen eingegeben (z. B. `o-mi` oder `ba-na-ne`). Die Lernansicht zeigt
+  die Silben abwechselnd blau (#1327e3) und rot (#ff0000), beginnend mit Blau, ohne Bindestriche.
 - Eltern wählen die Übungswochen unabhängig voneinander per Checkbox aus;
   nur ausgewählte Wochen werden verwendet. Die Auswahl bleibt lokal gespeichert.
 - Die höchste ausgewählte Woche wird bei neuen Aufgaben stärker gewichtet.
