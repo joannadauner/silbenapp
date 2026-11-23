@@ -25,6 +25,11 @@
 
             <h1 data-reading-text="Sil-ben le-sen">Silben lesen</h1>
 
+            <label class="timed-mode-option">
+                <input id="timed-mode" type="checkbox">
+                <span data-reading-text="Le-se-zeit mes-sen">Lesezeit messen</span>
+            </label>
+
             <button
                 id="start-button"
                 data-reading-text="Ü-bung star-ten"
@@ -39,6 +44,15 @@
             >
                 Silben einstellen
             </button>
+
+            <details class="best-times">
+                <summary>Persönliche Bestenliste</summary>
+                <p id="start-ranking-label"></p>
+                <p>Die zehn schnellsten Runden ohne „Nochmal“, für diese Wochenauswahl und deren Inhalte. Nur auf diesem Gerät gespeichert. Die Aufgaben werden zufällig zusammengestellt.</p>
+                <p id="start-ranking-empty">Noch keine Bestzeit vorhanden.</p>
+                <ol id="start-ranking-list"></ol>
+                <button id="clear-best-times" class="text-button">Alle Bestzeiten löschen</button>
+            </details>
 
             <div id="app-update" hidden>
                 <p id="app-update-status" role="status">Update verfügbar</p>
@@ -119,6 +133,8 @@
 
             </div>
 
+
+            <div id="reading-clock" class="reading-clock" role="timer" aria-label="Bisherige Lesezeit" hidden>0,0 s</div>
 
             <div class="syllable-panel">
                 <div class="answer-feedback">
@@ -268,6 +284,19 @@
             >
                 Genug für heute.
             </button>
+
+            <div id="timed-result" hidden>
+                <p id="reading-time-result"></p>
+                <p id="ranking-result-status"></p>
+                <details class="best-times">
+                <summary>Persönliche Bestenliste</summary>
+                <p id="finish-ranking-label"></p>
+                <p>Die zehn schnellsten Runden ohne „Nochmal“, für diese Wochenauswahl und deren Inhalte. Nur auf diesem Gerät gespeichert. Die Aufgaben werden zufällig zusammengestellt.</p>
+                <p id="finish-ranking-empty">Noch keine Bestzeit vorhanden.</p>
+                <ol id="finish-ranking-list"></ol>
+
+            </details>
+            </div>
 
             <details id="parent-overview" class="parent-overview">
                 <summary>Für Eltern</summary>

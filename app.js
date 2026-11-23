@@ -22,11 +22,118 @@ let currentWeekIndex = 0;
 let selectedWeeks = [];
 
 
+// Zeitmessung und persönliche Bestenlisten bleiben ausschließlich auf diesem Gerät.
+let timedSession = false;
+let readingElapsed = 0;
+let readingStartedAt = null;
+let readingClock = null;
+let sessionRankingKey = "";
+let sessionRankingLabel = "";
+const BEST_TIMES_KEY = "readingBestTimes";
+
+function rankingSelection() {
+    const indices = [...selectedWeeks].sort((a, b) => a - b);
+    return {
+        key: JSON.stringify(indices.map(index => [index, weeks[index]])),
+        label: `Wochen ${indices.map(index => index + 1).join(", ") || "–"}`
+    };
+}
+
+function loadBestTimes() {
+    try {
+        const entries = JSON.parse(localStorage.getItem(BEST_TIMES_KEY));
+        return Array.isArray(entries) ? entries.filter(entry => entry &&
+            typeof entry.key === "string" && Number.isFinite(entry.ms) && entry.ms > 0 &&
+            typeof entry.date === "string" && Number.isFinite(Date.parse(entry.date))) : [];
+    } catch {
+        return [];
+    }
+}
+
+function formatReadingTime(ms) {
+    return `${(ms / 1000).toLocaleString("de-DE", {
+        minimumFractionDigits: 1, maximumFractionDigits: 1
+    })} s`;
+}
+
+function currentReadingTime() {
+    return readingElapsed + (readingStartedAt === null ? 0 : performance.now() - readingStartedAt);
+}
+
+function renderReadingClock() {
+    document.getElementById("reading-clock").textContent = formatReadingTime(currentReadingTime());
+}
+
+function pauseReadingClock() {
+    if (readingStartedAt !== null) {
+        readingElapsed = currentReadingTime();
+        readingStartedAt = null;
+    }
+    clearInterval(readingClock);
+    readingClock = null;
+    if (timedSession) renderReadingClock();
+}
+
+function startReadingClock() {
+    if (!timedSession || readingStartedAt !== null) return;
+    readingStartedAt = performance.now();
+    renderReadingClock();
+    readingClock = setInterval(renderReadingClock, 100);
+}
+
+function renderBestTimes(prefix, key, label) {
+    document.getElementById(`${prefix}-ranking-label`).textContent = label;
+    const list = document.getElementById(`${prefix}-ranking-list`);
+    list.replaceChildren();
+    const entries = loadBestTimes().filter(entry => entry.key === key)
+        .sort((a, b) => a.ms - b.ms).slice(0, 10);
+    document.getElementById(`${prefix}-ranking-empty`).hidden = entries.length > 0;
+    entries.forEach(entry => {
+        const item = document.createElement("li");
+        item.textContent = `${formatReadingTime(entry.ms)} · ${new Date(entry.date).toLocaleDateString("de-DE")}`;
+        list.appendChild(item);
+    });
+}
+
+function renderStartBestTimes() {
+    const selection = rankingSelection();
+    renderBestTimes("start", selection.key, selection.label);
+}
+
+function finishTimedSession() {
+    pauseReadingClock();
+    document.getElementById("timed-result").hidden = !timedSession;
+    if (!timedSession) return;
+    renderChildText(document.getElementById("reading-time-result"),
+        `Dei-ne Le-se-zeit: ${formatReadingTime(readingElapsed)}`);
+    let status = "Mit „Nochmal“ bleibt diese Runde außerhalb der Bestenliste.";
+    if (!hadUncertainAnswer && currentPosition === SESSION_LENGTH && readingElapsed > 0) {
+        const entries = loadBestTimes();
+        const result = { key: sessionRankingKey, ms: readingElapsed, date: new Date().toISOString() };
+        const ranked = [...entries.filter(entry => entry.key === sessionRankingKey), result]
+            .sort((a, b) => a.ms - b.ms);
+        const rank = ranked.indexOf(result) + 1;
+        try {
+            localStorage.setItem(BEST_TIMES_KEY, JSON.stringify([
+                ...entries.filter(entry => entry.key !== sessionRankingKey), ...ranked.slice(0, 10)
+            ]));
+            status = rank <= 10 ? `Platz ${rank} in deiner Bestenliste!`
+                : "Erfolgreiche Runde! Deine zehn schnellsten Zeiten bleiben in der Bestenliste.";
+        } catch {
+            status = "Die Zeit konnte auf diesem Gerät nicht gespeichert werden.";
+        }
+    }
+    document.getElementById("ranking-result-status").textContent = status;
+    renderBestTimes("finish", sessionRankingKey, sessionRankingLabel);
+}
+
 // ------------------------------------
 // BILDSCHIRME WECHSELN
 // ------------------------------------
 
 function showScreen(screenId) {
+
+    if (screenId === "start-screen") renderStartBestTimes();
 
     document
         .querySelectorAll(".screen")
@@ -202,6 +309,15 @@ function savePendingRepeats() {
 }
 
 function removeQueuedRepeat(syllable) {
+    // Erfolgreiche Zeitrunden behalten zehn Aufgaben für vergleichbare Bestzeiten.
+    // Der Wiederholungsauftrag ist erledigt; die Aufgabe zählt als normale Übung.
+    if (timedSession && !hadUncertainAnswer) {
+        sessionQueue.forEach((task, index) => {
+            if (index > currentPosition && task.isRepeat && task.syllable === syllable) {
+                task.isRepeat = false;
+            }
+        });
+    }
     sessionQueue = sessionQueue.filter((task, index) =>
         index <= currentPosition || !task.isRepeat || task.syllable !== syllable
     );
@@ -446,6 +562,14 @@ function createSession() {
     sessionUnresolved = new Set();
     sessionPracticed = new Set();
     sessionActive = true;
+    pauseReadingClock();
+    timedSession = document.getElementById("timed-mode").checked === true;
+    readingElapsed = 0;
+    const selection = rankingSelection();
+    sessionRankingKey = selection.key;
+    sessionRankingLabel = selection.label;
+    document.getElementById("reading-clock").hidden = !timedSession;
+    document.getElementById("timed-result").hidden = true;
 
     return true;
 }
@@ -472,6 +596,7 @@ function showCurrentSyllable() {
     renderProgress();
 
     alignTextToNotebook();
+    startReadingClock();
 }
 
 function renderReadingText(card, syllable) {
@@ -627,6 +752,7 @@ function answerCorrect() {
 
     if (!sessionActive || answerFeedbackTimer !== null) return;
 
+    pauseReadingClock();
     const syllable = sessionQueue[currentPosition].syllable;
     sessionUnresolved.delete(syllable);
     pendingRepeats.delete(syllable);
@@ -645,6 +771,7 @@ function repeatLater() {
 
     if (!sessionActive || answerFeedbackTimer !== null) return;
 
+    pauseReadingClock();
     const syllable = sessionQueue[currentPosition].syllable;
     hadUncertainAnswer = true;
     sessionUnresolved.add(syllable);
@@ -731,6 +858,7 @@ function continueSession() {
     ) {
 
         sessionActive = false;
+        finishTimedSession();
         showSessionFeedback();
         showScreen(
             "finish-screen"
@@ -772,6 +900,7 @@ function endPracticeEarly() {
     if (!window.confirm("Möchtest du die Leserunde für heute beenden?")) return;
 
     sessionActive = false;
+    pauseReadingClock();
     resetAnswerFeedback();
     showScreen("start-screen");
 }
@@ -780,6 +909,19 @@ function endPracticeEarly() {
 // ------------------------------------
 // BUTTONS
 // ------------------------------------
+
+document.getElementById("clear-best-times").addEventListener("click", () => {
+    if (!window.confirm("Alle persönlichen Bestzeiten auf diesem Gerät löschen?")) return;
+    try {
+        localStorage.removeItem(BEST_TIMES_KEY);
+        renderStartBestTimes();
+    } catch {
+        alert("Die Bestzeiten konnten nicht gelöscht werden.");
+    }
+});
+document.querySelectorAll(".best-times").forEach(element => {
+    element.addEventListener("toggle", alignTextToNotebook);
+});
 
 document.getElementById("parent-overview").addEventListener("toggle", alignTextToNotebook);
 
@@ -905,6 +1047,7 @@ document.querySelectorAll("[data-reading-text]").forEach(element => {
 loadWeeks();
 loadPendingRepeats();
 renderWeeks();
+renderStartBestTimes();
 
 // Nach Größenänderungen erst mit den aktuellen Layoutmaßen ausrichten.
 let layoutFrame = null;

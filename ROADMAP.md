@@ -181,3 +181,17 @@ Bei fehlschlagenden Tests erfolgt kein Deployment. Keine zusätzlichen Testbibli
   Dokumentationsänderungen benötigen keine Änderung am App-Code oder Cache.
 - Nach Änderungen gezielt relevante Abläufe prüfen: Start, Bewertungen,
   Wiederholungen, Abschluss, Speicherung; bei Layoutänderungen beide Ausrichtungen.
+
+## Optionaler Zeitmodus und persönliche Bestenliste
+
+- „Lesezeit messen“ ist auf der Startseite optional; normale Runden bleiben voreingestellt.
+- Gemessen wird vom Anzeigen einer Aufgabe bis zur Antwort. Rückmeldungspausen zählen nicht.
+- Die bisherigen 10 Aufgaben, Wiederholungen und die Grenze von 15 Aufgaben bleiben erhalten.
+  Erfolgreiche Zeitrunden behalten zehn Aufgaben: vorzeitig erledigte Wiederholungsaufgaben
+  zählen dann als normale Übungsaufgaben.
+- Nur vollständig abgeschlossene Zeitrunden ohne „Nochmal“ erhalten einen Ranking-Eintrag.
+  Abgebrochene und normale Runden erhalten keinen Eintrag.
+- Die zehn schnellsten Zeiten eines Kindes werden je Wochenauswahl und deren Inhalt mit Datum
+  lokal gespeichert. Geänderte Inhalte haben eine eigene Liste; Aufgaben bleiben zufällig.
+- Bestenlisten lassen sich auf der Startseite ansehen und nach Bestätigung vollständig löschen.
+  Sie gehören nicht zum Wochenexport/-import. Es gibt keine Namen oder Online-Rangliste.

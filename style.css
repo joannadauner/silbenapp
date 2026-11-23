@@ -543,3 +543,18 @@ button {
 .primary-button[data-reading-text] .second-syllable {
     color: #d9d9d9;
 }
+
+/* Optionaler Zeitmodus und lokale Bestenlisten. */
+.timed-mode-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 24px 0;
+    font-size: 20px;
+}
+.timed-mode-option input { width: 24px; height: 24px; accent-color: var(--dark-blue); }
+.reading-clock { font-size: 20px; font-variant-numeric: tabular-nums; margin: 8px 0; }
+.best-times { margin: 24px 0; text-align: left; }
+.best-times summary { cursor: pointer; font-weight: 600; }
+.best-times li { padding: 6px 0; font-variant-numeric: tabular-nums; }

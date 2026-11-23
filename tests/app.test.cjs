@@ -15,10 +15,13 @@ function app(saved = {}) {
     const timers = new Map();
     let timerId = 0;
     const context = vm.createContext({
+        testNow: 0,
         document: { getElementById(id) {
-            if (!elements.has(id)) elements.set(id, { disabled: false, textContent: '' });
+            if (!elements.has(id)) elements.set(id, { disabled: false, textContent: '', children: [], replaceChildren() { this.children = []; }, appendChild(child) { this.children.push(child); }, setAttribute() {} });
             return elements.get(id);
         } },
+        performance: { now: () => context.testNow || 0 },
+        setInterval() { return 1; }, clearInterval() {},
         localStorage: {
             getItem: key => storage.get(key) ?? null,
             setItem: (key, value) => storage.set(key, String(value)),
@@ -40,6 +43,8 @@ function app(saved = {}) {
         renderWeeks = () => {}; showCurrentSyllable = () => {};
         showScreen = () => {}; showSessionFeedback = () => {};
         document.querySelectorAll = () => [];
+        document.createElement = () => ({ children: [], appendChild(child) { this.children.push(child); }, setAttribute() {} });
+        document.createTextNode = text => ({ textContent: text });
         weeks = [['ma', 'mi', 'o-mi']]; selectedWeeks = [0];`);
     return {
         run, storage, context,
@@ -196,4 +201,92 @@ test('new devices receive two selected default weeks; existing settings are pres
     b.run('loadWeeks()');
     assert.deepEqual(b.value('weeks'), [['so']]);
     assert.deepEqual(b.value('selectedWeeks'), []);
+});
+
+function startTimed(a) {
+    a.run(`document.getElementById('timed-mode').checked = true;
+        createSession(); startReadingClock();`);
+}
+
+test('timed round records reading time, excludes feedback and survives reload', () => {
+    const a = app(); startTimed(a);
+    for (let i = 0; i < 10; i++) {
+        a.run('testNow = (testNow || 0) + 2000');
+        a.answer('answerCorrect');
+        a.run('testNow += 1000'); // Feedback time does not count.
+        if (i < 9) a.run('startReadingClock()');
+    }
+    const saved = JSON.parse(a.storage.get('readingBestTimes'));
+    assert.equal(saved.length, 1);
+    assert.equal(saved[0].ms, 20000);
+    const b = app({ readingBestTimes: JSON.stringify(saved) });
+    assert.equal(b.value('loadBestTimes()[0].ms'), 20000);
+    assert.equal(a.value('readingStartedAt'), null);
+});
+
+test('normal, uncertain and cancelled rounds never create a ranking entry', () => {
+    const normal = app(); normal.run('createSession()');
+    for (let i = 0; i < 10; i++) normal.answer('answerCorrect');
+    assert.equal(normal.storage.has('readingBestTimes'), false);
+    const uncertain = app(); startTimed(uncertain);
+    uncertain.run('testNow = 500'); uncertain.answer('repeatLater');
+    while (uncertain.value('sessionActive')) {
+        uncertain.run('startReadingClock(); testNow += 500'); uncertain.answer('answerCorrect');
+    }
+    assert.equal(uncertain.storage.has('readingBestTimes'), false);
+    const cancelled = app(); startTimed(cancelled);
+    cancelled.run('testNow = 500; endPracticeEarly()');
+    assert.equal(cancelled.storage.has('readingBestTimes'), false);
+    assert.equal(cancelled.value('readingStartedAt'), null);
+    assert.equal(cancelled.value('sessionActive'), false);
+});
+
+test('ranking separates selections and changed contents and keeps only the fastest ten', () => {
+    const a = app();
+    const key = a.value('rankingSelection().key');
+    a.run("weeks[0].push('mu')");
+    assert.notEqual(a.value('rankingSelection().key'), key);
+    a.run('selectedWeeks = []');
+    assert.notEqual(a.value('rankingSelection().key'), key);
+    a.run('selectedWeeks = [0]');
+    for (let i = 12; i > 0; i--) {
+        startTimed(a);
+        for (let j = 0; j < 10; j++) {
+            a.run(`testNow = (testNow || 0) + ${i * 100}`);
+            a.answer('answerCorrect');
+            if (j < 9) a.run('startReadingClock()');
+        }
+    }
+    const entries = JSON.parse(a.storage.get('readingBestTimes'));
+    assert.equal(entries.length, 10);
+    assert.deepEqual(entries.map(entry => entry.ms), Array.from({length: 10}, (_, i) => (i + 1) * 1000));
+});
+
+test('broken rankings and unavailable storage do not prevent a timed finish', () => {
+    const a = app({ readingBestTimes: '{broken' });
+    assert.deepEqual(a.value('loadBestTimes()'), []);
+    startTimed(a);
+    a.run(`localStorage.setItem = (key, value) => {
+        if (key === BEST_TIMES_KEY) throw new Error('full');
+    };`);
+    for (let i = 0; i < 10; i++) {
+        a.run('testNow = (testNow || 0) + 500'); a.answer('answerCorrect');
+        if (i < 9) a.run('startReadingClock()');
+    }
+    assert.equal(a.value('sessionActive'), false);
+    assert.match(a.value("document.getElementById('ranking-result-status').textContent"), /nicht gespeichert/);
+});
+
+
+test('clearing a carried repeat keeps successful timed rounds at ten tasks', () => {
+    const a = app(); startTimed(a);
+    a.run(`sessionQueue = Array.from({length: 10}, (_, i) => ({syllable: 'ma', isRepeat: i === 1}));
+        pendingRepeats.add('ma');`);
+    for (let i = 0; i < 10; i++) {
+        a.run('testNow += 500'); a.answer('answerCorrect');
+        if (i < 9) a.run('startReadingClock()');
+    }
+    assert.equal(a.value('currentPosition'), 10);
+    assert.deepEqual(a.value('[...pendingRepeats]'), []);
+    assert.equal(JSON.parse(a.storage.get('readingBestTimes'))[0].ms, 5000);
 });
